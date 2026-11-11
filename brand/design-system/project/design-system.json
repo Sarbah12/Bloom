@@ -1,0 +1,143 @@
+{
+  "v": 3,
+  "layout": "files",
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-11-11T23:30:30Z"
+  },
+  "title": "Bloom",
+  "namespace": "Bloom",
+  "libraries": [],
+  "sections": {},
+  "groups": [
+    "Logos",
+    "Social"
+  ],
+  "assetGroups": {
+    "Logos": {
+      "name": "Logos",
+      "tile": "m",
+      "order": [
+        "bloom-wordmark.svg",
+        "bloom-wordmark-reversed.svg",
+        "bloom-wordmark-mono.svg",
+        "bloom-mark.svg",
+        "bloom-mark-reversed.svg",
+        "bloom-mark-mono.svg",
+        "bloom-lockup-tagline.svg",
+        "bloom-app-icon.svg",
+        "bloom-app-icon-rounded.png"
+      ],
+      "files": {
+        "bloom-wordmark.svg": {
+          "name": "bloom-wordmark.svg",
+          "blob": "9be06eed43b32929295cee83c84aab5a",
+          "size": 4364,
+          "type": "image/svg+xml"
+        },
+        "bloom-wordmark-reversed.svg": {
+          "name": "bloom-wordmark-reversed.svg",
+          "blob": "d9bbf14ee60d4f2c08de1dacad9d7738",
+          "size": 4364,
+          "type": "image/svg+xml"
+        },
+        "bloom-wordmark-mono.svg": {
+          "name": "bloom-wordmark-mono.svg",
+          "blob": "26779815f191c3dcebb64115916fdcbe",
+          "size": 4364,
+          "type": "image/svg+xml"
+        },
+        "bloom-mark.svg": {
+          "name": "bloom-mark.svg",
+          "blob": "b5a923f4af073a1eb677b0f69436e1c5",
+          "size": 491,
+          "type": "image/svg+xml"
+        },
+        "bloom-mark-reversed.svg": {
+          "name": "bloom-mark-reversed.svg",
+          "blob": "5fad6154ba69322215dca10dba27e358",
+          "size": 491,
+          "type": "image/svg+xml"
+        },
+        "bloom-mark-mono.svg": {
+          "name": "bloom-mark-mono.svg",
+          "blob": "8ca5884aa6d1eba2237940fc75b58467",
+          "size": 491,
+          "type": "image/svg+xml"
+        },
+        "bloom-lockup-tagline.svg": {
+          "name": "bloom-lockup-tagline.svg",
+          "blob": "6b8026014ef518b7a4f11aece887d08c",
+          "size": 16549,
+          "type": "image/svg+xml"
+        },
+        "bloom-app-icon.svg": {
+          "name": "bloom-app-icon.svg",
+          "blob": "b1b3b8b61656ee88229195cff566f0fa",
+          "size": 728,
+          "type": "image/svg+xml"
+        },
+        "bloom-app-icon-rounded.png": {
+          "name": "bloom-app-icon-rounded.png",
+          "blob": "893d57a55b20e3982cde9fd06adc1438",
+          "size": 26012,
+          "type": "image/png"
+        }
+      }
+    },
+    "Social": {
+      "name": "Social",
+      "tile": "l",
+      "order": [
+        "avatar.png",
+        "instagram-post.png",
+        "instagram-story.png",
+        "banner.png",
+        "play-feature-graphic.png"
+      ],
+      "files": {
+        "avatar.png": {
+          "name": "avatar.png",
+          "blob": "b80fb2436874012a47e3bcf808009803",
+          "size": 68582,
+          "type": "image/png"
+        },
+        "instagram-post.png": {
+          "name": "instagram-post.png",
+          "blob": "0a98f72d9594468e19bc5f51cac3938a",
+          "size": 93695,
+          "type": "image/png"
+        },
+        "instagram-story.png": {
+          "name": "instagram-story.png",
+          "blob": "a4bbcf29dc7e3d86a8aa335e39943200",
+          "size": 159219,
+          "type": "image/png"
+        },
+        "banner.png": {
+          "name": "banner.png",
+          "blob": "0432a130b3dc64a9c17488a7a03f2104",
+          "size": 50764,
+          "type": "image/png"
+        },
+        "play-feature-graphic.png": {
+          "name": "play-feature-graphic.png",
+          "blob": "69fb1942e46a7d4d5873d1a36a9d842b",
+          "size": 58105,
+          "type": "image/png"
+        }
+      }
+    }
+  },
+  "blobs": {},
+  "docs": {
+    "readme": "project/README.md",
+    "sections": []
+  },
+  "lastChange": {
+    "by": "Claude",
+    "via": "Claude Code",
+    "at": "2026-11-11T23:30:30Z",
+    "note": "Brand book, 9 component pages, cover, logos and social assets"
+  }
+}

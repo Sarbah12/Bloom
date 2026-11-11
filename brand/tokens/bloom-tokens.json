@@ -1,0 +1,227 @@
+{
+  "brand": {
+    "berry": "#A23B6D",
+    "deepBerry": "#5E1A43",
+    "plum": "#A33F6C",
+    "rose": "#F27BA6",
+    "petal": "#E8A1BE",
+    "blush": "#FBE3EC",
+    "petalWhite": "#FCF7F8",
+    "cream": "#FFF7F0",
+    "ink": "#2D1A24",
+    "inkMuted": "#694F5B"
+  },
+  "color": {
+    "light": {
+      "background": "#FCF7F8",
+      "surface": "#FFFFFF",
+      "surfaceMuted": "#F8EDF1",
+      "border": "#F1E3E8",
+      "borderStrong": "#9A7F89",
+      "ink": "#2D1A24",
+      "inkMuted": "#694F5B",
+      "inkSubtle": "#7A616C",
+      "primary": "#A23B6D",
+      "primaryPressed": "#852D58",
+      "onPrimary": "#FFFFFF",
+      "primarySoft": "#FBE4EE",
+      "onPrimarySoft": "#7A2550",
+      "heroStart": "#5E1A43",
+      "heroEnd": "#A33F6C",
+      "onHero": "#FFFFFF",
+      "onHeroMuted": "#FBE0EB",
+      "tintStart": "#FBE3EC",
+      "tintEnd": "#FFF5F8",
+      "focus": "#A23B6D",
+      "success": "#2F7A4E",
+      "successSoft": "#E1F1E7",
+      "warning": "#8A5200",
+      "warningSoft": "#FDEFE0",
+      "onWarningSoft": "#6B3F00",
+      "danger": "#B42318",
+      "dangerSoft": "#FDE7E4",
+      "onDangerSoft": "#8F1B12",
+      "overlay": "rgba(45, 26, 36, 0.45)",
+      "shadow": "#5E1A43",
+      "switchOff": "#E3D3DA",
+      "phase": {
+        "menstrual": {
+          "solid": "#C8365A",
+          "soft": "#FDE4E9",
+          "onSoft": "#8E1F3C",
+          "onSolid": "#FFFFFF"
+        },
+        "follicular": {
+          "solid": "#3E7A63",
+          "soft": "#E3F2EC",
+          "onSoft": "#2A5A47",
+          "onSolid": "#FFFFFF"
+        },
+        "ovulatory": {
+          "solid": "#A85A18",
+          "soft": "#FDEBDD",
+          "onSoft": "#7A3E0C",
+          "onSolid": "#FFFFFF"
+        },
+        "luteal": {
+          "solid": "#7A5BB5",
+          "soft": "#EFE8FA",
+          "onSoft": "#55388F",
+          "onSolid": "#FFFFFF"
+        }
+      }
+    },
+    "dark": {
+      "background": "#140D11",
+      "surface": "#20161B",
+      "surfaceMuted": "#2C1F26",
+      "border": "#3A2A32",
+      "borderStrong": "#9A8490",
+      "ink": "#FAF0F4",
+      "inkMuted": "#D4C1CA",
+      "inkSubtle": "#B7A3AD",
+      "primary": "#F29BC0",
+      "primaryPressed": "#F7B6D1",
+      "onPrimary": "#3A0D24",
+      "primarySoft": "#3E1A2C",
+      "onPrimarySoft": "#FAD0E2",
+      "heroStart": "#4A1534",
+      "heroEnd": "#7A2A56",
+      "onHero": "#FFFFFF",
+      "onHeroMuted": "#F6D2E2",
+      "tintStart": "#2E1A25",
+      "tintEnd": "#22161C",
+      "focus": "#F29BC0",
+      "success": "#6CC58D",
+      "successSoft": "#16301F",
+      "warning": "#F0AE6A",
+      "warningSoft": "#3B2814",
+      "onWarningSoft": "#FAD6AE",
+      "danger": "#FF8A80",
+      "dangerSoft": "#3D1714",
+      "onDangerSoft": "#FFC4BE",
+      "overlay": "rgba(0, 0, 0, 0.6)",
+      "shadow": "#000000",
+      "switchOff": "#4A3A42",
+      "phase": {
+        "menstrual": {
+          "solid": "#F27A94",
+          "soft": "#42192A",
+          "onSoft": "#FFC6D3",
+          "onSolid": "#1C0A10"
+        },
+        "follicular": {
+          "solid": "#7CC7AA",
+          "soft": "#17302A",
+          "onSoft": "#B2E6D2",
+          "onSolid": "#0B1A15"
+        },
+        "ovulatory": {
+          "solid": "#F0AE6A",
+          "soft": "#3B2814",
+          "onSoft": "#FAD6AE",
+          "onSolid": "#201205"
+        },
+        "luteal": {
+          "solid": "#B9A1F0",
+          "soft": "#2A2142",
+          "onSoft": "#DCD0FA",
+          "onSolid": "#160F28"
+        }
+      }
+    }
+  },
+  "type": {
+    "families": {
+      "wordmark": "Playfair Display SemiBold (logo only)",
+      "display": "Plus Jakarta Sans (600–800)",
+      "body": "Inter (400–600)"
+    },
+    "scale": {
+      "hero": {
+        "fontFamily": "PlusJakartaSans_800ExtraBold",
+        "fontSize": 56,
+        "lineHeight": 60,
+        "letterSpacing": -2
+      },
+      "display": {
+        "fontFamily": "PlusJakartaSans_700Bold",
+        "fontSize": 30,
+        "lineHeight": 36,
+        "letterSpacing": -0.8
+      },
+      "title1": {
+        "fontFamily": "PlusJakartaSans_700Bold",
+        "fontSize": 24,
+        "lineHeight": 30,
+        "letterSpacing": -0.5
+      },
+      "title2": {
+        "fontFamily": "PlusJakartaSans_700Bold",
+        "fontSize": 19,
+        "lineHeight": 25,
+        "letterSpacing": -0.3
+      },
+      "title3": {
+        "fontFamily": "PlusJakartaSans_600SemiBold",
+        "fontSize": 17,
+        "lineHeight": 23,
+        "letterSpacing": -0.2
+      },
+      "headline": {
+        "fontFamily": "Inter_600SemiBold",
+        "fontSize": 15,
+        "lineHeight": 21
+      },
+      "body": {
+        "fontFamily": "Inter_400Regular",
+        "fontSize": 16,
+        "lineHeight": 24
+      },
+      "bodyStrong": {
+        "fontFamily": "Inter_500Medium",
+        "fontSize": 15,
+        "lineHeight": 22
+      },
+      "callout": {
+        "fontFamily": "Inter_400Regular",
+        "fontSize": 14,
+        "lineHeight": 20
+      },
+      "footnote": {
+        "fontFamily": "Inter_400Regular",
+        "fontSize": 13,
+        "lineHeight": 18
+      },
+      "caption": {
+        "fontFamily": "Inter_500Medium",
+        "fontSize": 12,
+        "lineHeight": 16
+      },
+      "eyebrow": {
+        "fontFamily": "Inter_500Medium",
+        "fontSize": 13,
+        "lineHeight": 18
+      }
+    }
+  },
+  "space": {
+    "xxs": 2,
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 20,
+    "xxl": 24,
+    "xxxl": 32,
+    "huge": 48,
+    "gutter": 20
+  },
+  "radii": {
+    "sm": 12,
+    "md": 18,
+    "lg": 26,
+    "xl": 34,
+    "pill": 999
+  }
+}

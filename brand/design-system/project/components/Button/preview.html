@@ -1,0 +1,37 @@
+<!-- @dsCard group="Actions" height=170 subtitle="Primary, secondary, soft, ghost, danger; arrow variant" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Button — preview</title>
+<style>
+html,body{margin:0}
+body{background:var(--background);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+.ic{flex:none;display:block}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.stack{padding:16px;display:flex;flex-direction:column;gap:12px}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;box-sizing:border-box;border-radius:var(--radius-pill);border:1px solid transparent;cursor:pointer;font:inherit}
+.primary{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.primary:active{background:var(--primary-pressed);border-color:var(--primary-pressed)}
+.secondary{background:var(--surface);border-color:var(--border-strong);color:var(--ink)}
+.soft{background:var(--primary-soft);border-color:var(--primary-soft);color:var(--on-primary-soft)}
+.ghost{background:transparent;color:var(--primary)}
+.danger{background:var(--danger-soft);border-color:var(--danger-soft);color:var(--on-danger-soft)}
+.arrow{justify-content:space-between;min-height:56px;padding:0 8px 0 24px;width:100%;max-width:380px}
+.arrow .circle{width:40px;height:40px;border-radius:20px;background:var(--on-primary);color:var(--primary);display:grid;place-items:center}
+</style>
+</head>
+<body>
+<div class="stack">
+  <button class="btn primary arrow"><span class="headline">Log today’s check-in</span><span class="circle"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span></button>
+  <div class="row">
+    <button class="btn primary"><span class="headline">Start period</span></button>
+    <button class="btn secondary"><span class="headline">Not now</span></button>
+    <button class="btn soft"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="headline">Cramp relief ideas</span></button>
+    <button class="btn ghost"><span class="headline">Edit</span></button>
+    <button class="btn danger"><span class="headline">Delete my data</span></button>
+  </div>
+</div>
+</body>
+</html>

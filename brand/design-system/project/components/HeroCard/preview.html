@@ -1,0 +1,38 @@
+<!-- @dsCard group="Surfaces" height=220 subtitle="The one most important fact on a screen" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HeroCard — preview</title>
+<style>
+html,body{margin:0}
+body{background:var(--background);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+.ic{flex:none;display:block}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.pad{padding:16px}
+.herocard{max-width:560px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:24px;border-radius:var(--radius-xl);background:linear-gradient(135deg,var(--hero-start),var(--hero-end));color:var(--on-hero);box-shadow:var(--shadow-raised)}
+.muted{color:var(--on-hero-muted)}
+.big{margin:4px 0}
+.ring{position:relative;width:132px;height:132px;flex:none}
+.ring svg{position:absolute;inset:0}
+.track{stroke:var(--on-hero);stroke-opacity:.25}
+.arc{stroke:var(--on-hero)}
+.ring .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+</style>
+</head>
+<body>
+<div class="pad">
+  <div class="herocard" role="group" aria-label="Your period, day 1. Started November 11.">
+    <div>
+      <div class="callout muted">Your period</div>
+      <div class="hero big">Day 1</div>
+      <div class="callout">Started Nov 11</div>
+    </div>
+    <div class="ring" aria-hidden="true">
+      <svg width="132" height="132" viewBox="0 0 132 132" fill="none"><circle class="track" cx="66" cy="66" r="56" stroke-width="10"/><path class="arc" d="M60 10.3 A56 56 0 0 1 72 10.3" stroke-width="10" stroke-linecap="round"/></svg>
+      <div class="c"><span class="caption muted">Day</span><span class="title1">1</span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

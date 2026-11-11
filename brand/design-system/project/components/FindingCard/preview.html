@@ -1,0 +1,32 @@
+<!-- @dsCard group="Surfaces" height=420 subtitle="Cycle changes and deviations from your usual" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FindingCard — preview</title>
+<style>
+html,body{margin:0}
+body{background:var(--background);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+.ic{flex:none;display:block}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.stack{padding:16px;display:flex;flex-direction:column;gap:12px;max-width:540px}
+.f{display:flex;gap:12px;align-items:flex-start;padding:16px;border-radius:var(--radius-lg)}
+.f .ic{margin-top:2px}
+.f.info{background:var(--surface);border:1px solid var(--border);color:var(--ink)}
+.f.info .sub{color:var(--ink-muted)}
+.f.care{background:var(--warning-soft);color:var(--on-warning-soft)}
+.f.good{background:var(--success-soft);color:var(--ink)}
+.f.good .ic{color:var(--success)}
+.f.good .sub{color:var(--ink-muted)}
+.d{display:block;margin-top:2px}
+.b{display:block;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="stack">
+  <div class="f info" role="group" aria-label="Your last cycle was shorter than usual"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg><div><span class="headline">Your last cycle was shorter than usual</span><span class="caption sub d">21 days · your usual 28</span><span class="footnote sub b">One unusual cycle is common — stress, illness or travel can shift it. If it keeps happening, mention it to a healthcare professional.</span></div></div>
+  <div class="f care" role="group" aria-label="Bleeding between periods"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><div><span class="headline">Bleeding between periods</span><span class="caption d">Oct 29 and Oct 30</span><span class="footnote b">Spotting can happen around ovulation or with new contraception. Bleeding between periods that keeps happening is worth checking with a doctor or nurse.</span></div></div>
+  <div class="f good" role="group" aria-label="Your cramps have been easier"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><div><span class="headline">Your cramps have been easier</span><span class="caption sub d">Last 3 periods: mild · before: moderate</span><span class="footnote sub b">Keep noting what helps — it builds a picture of what works for you.</span></div></div>
+</div>
+</body>
+</html>

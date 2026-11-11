@@ -1,0 +1,91 @@
+{
+  "expo": {
+    "name": "Bloom",
+    "slug": "bloom",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "bloom",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "backgroundColor": "#FCF7F8",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sarbah.bloom",
+      "buildNumber": "1",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSFaceIDUsageDescription": "Bloom uses Face ID to keep your health records locked."
+      },
+      "entitlements": {
+        "keychain-access-groups": [
+          "$(AppIdentifierPrefix)com.sarbah.bloom"
+        ]
+      }
+    },
+    "android": {
+      "package": "com.sarbah.bloom",
+      "versionCode": 1,
+      "allowBackup": false,
+      "adaptiveIcon": {
+        "backgroundColor": "#C2557F",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.USE_BIOMETRIC"
+      ],
+      "blockedPermissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.RECORD_AUDIO",
+        "com.google.android.gms.permission.AD_ID"
+      ]
+    },
+    "web": {
+      "output": "single",
+      "bundler": "metro",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "./plugins/with-local-notifications-only",
+      "./plugins/with-min-pod-deployment-target",
+      "expo-router",
+      "expo-font",
+      "expo-secure-store",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Bloom uses Face ID to keep your health records locked."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#A23B6D",
+          "icon": "./assets/images/android-icon-monochrome.png"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 120,
+          "resizeMode": "contain",
+          "backgroundColor": "#FCF7F8",
+          "dark": {
+            "image": "./assets/images/splash-icon.png",
+            "backgroundColor": "#140D11"
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": false
+    },
+    "icon": "./assets/images/icon.png"
+  }
+}

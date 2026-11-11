@@ -1,0 +1,37 @@
+<!-- @dsCard group="Cycle" height=140 subtitle="Logged, predicted, fertile (est.), ovulation (est.), today, selected" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CalendarDay — preview</title>
+<style>
+html,body{margin:0}
+body{background:var(--background);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+.ic{flex:none;display:block}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.row{padding:16px;display:flex;flex-wrap:wrap;gap:16px}
+.cell{display:flex;flex-direction:column;align-items:center;gap:6px;width:72px}
+.ring{border:2px solid transparent;border-radius:24px;padding:1px}
+.ring.sel{border-color:var(--primary)}
+.day{width:38px;height:38px;border-radius:19px;display:grid;place-items:center;box-sizing:border-box}
+.logged{background:var(--menstrual);color:var(--menstrual-on-solid)}
+.predicted{border:2px dashed var(--menstrual);color:var(--ink)}
+.fertile{background:var(--ovulatory-soft);color:var(--ovulatory-on-soft)}
+.ovulation{background:var(--ovulatory-soft);border:2px solid var(--ovulatory);color:var(--ovulatory-on-soft)}
+.today{border:2px solid var(--ink)}
+.dot{width:5px;height:5px;border-radius:3px;background:var(--ink-muted)}
+.nodot{width:5px;height:5px}
+.lbl{color:var(--ink-muted);text-align:center}
+</style>
+</head>
+<body>
+<div class="row">
+  <div class="cell"><div class="ring"><div class="day logged"><span class="headline">3</span></div></div><span class="dot"></span><span class="caption lbl">Period</span></div>
+  <div class="cell"><div class="ring"><div class="day predicted"><span class="headline">29</span></div></div><span class="nodot"></span><span class="caption lbl">Predicted</span></div>
+  <div class="cell"><div class="ring"><div class="day fertile"><span class="headline">14</span></div></div><span class="nodot"></span><span class="caption lbl">Fertile (est.)</span></div>
+  <div class="cell"><div class="ring"><div class="day ovulation"><span class="headline">17</span></div></div><span class="nodot"></span><span class="caption lbl">Ovulation (est.)</span></div>
+  <div class="cell"><div class="ring"><div class="day today"><span class="headline">11</span></div></div><span class="dot"></span><span class="caption lbl">Today</span></div>
+  <div class="cell"><div class="ring sel"><div class="day"><span class="headline">20</span></div></div><span class="nodot"></span><span class="caption lbl">Selected</span></div>
+</div>
+</body>
+</html>

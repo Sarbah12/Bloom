@@ -1,0 +1,28 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "bloom-web",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "expo",
+        "start",
+        "--web",
+        "--port",
+        "8096"
+      ],
+      "port": 8096
+    },
+    {
+      "name": "bloom-metro",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "expo",
+        "start",
+        "--port",
+        "8081"
+      ],
+      "port": 8081
+    }
+  ]
+}

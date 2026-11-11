@@ -1,0 +1,29 @@
+<!-- @dsCard group="Cycle" height=80 subtitle="Phase name on its soft colour, with a solid dot" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PhaseBadge — preview</title>
+<style>
+html,body{margin:0}
+body{background:var(--background);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+.ic{flex:none;display:block}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.row{padding:16px;display:flex;flex-wrap:wrap;gap:8px}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:var(--radius-pill)}
+.dot{width:8px;height:8px;border-radius:4px}
+.menstrual{background:var(--menstrual-soft);color:var(--menstrual-on-soft)} .menstrual .dot{background:var(--menstrual)}
+.follicular{background:var(--follicular-soft);color:var(--follicular-on-soft)} .follicular .dot{background:var(--follicular)}
+.ovulatory{background:var(--ovulatory-soft);color:var(--ovulatory-on-soft)} .ovulatory .dot{background:var(--ovulatory)}
+.luteal{background:var(--luteal-soft);color:var(--luteal-on-soft)} .luteal .dot{background:var(--luteal)}
+</style>
+</head>
+<body>
+<div class="row">
+  <span class="badge menstrual"><span class="dot"></span><span class="caption">Menstrual phase</span></span>
+  <span class="badge follicular"><span class="dot"></span><span class="caption">Follicular phase · Estimated</span></span>
+  <span class="badge ovulatory"><span class="dot"></span><span class="caption">Ovulation · Estimated</span></span>
+  <span class="badge luteal"><span class="dot"></span><span class="caption">Luteal phase · Estimated</span></span>
+</div>
+</body>
+</html>

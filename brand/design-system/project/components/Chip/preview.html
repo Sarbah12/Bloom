@@ -1,0 +1,34 @@
+<!-- @dsCard group="Actions" height=150 subtitle="Multi-select symptoms, single-select flow" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Chip — preview</title>
+<style>
+html,body{margin:0}
+body{background:var(--background);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+.ic{flex:none;display:block}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.stack{padding:16px;display:flex;flex-direction:column;gap:16px}
+.group{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;box-sizing:border-box;border-radius:var(--radius-pill);border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);cursor:pointer;font:inherit}
+.chip[aria-checked="true"]{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.chip.period[aria-checked="true"]{background:var(--menstrual);border-color:var(--menstrual);color:var(--menstrual-on-solid)}
+</style>
+</head>
+<body>
+<div class="stack">
+  <div class="group" role="group" aria-label="Symptoms">
+    <button class="chip" role="checkbox" aria-checked="true"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg><span class="body">Cramps</span></button>
+    <button class="chip" role="checkbox" aria-checked="false"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg><span class="body">Bloating</span></button>
+    <button class="chip" role="checkbox" aria-checked="false"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span class="body">Back pain</span></button>
+  </div>
+  <div class="group" role="radiogroup" aria-label="Flow">
+    <button class="chip period" role="radio" aria-checked="false"><span class="body">Spotting</span></button>
+    <button class="chip period" role="radio" aria-checked="false"><span class="body">Light</span></button>
+    <button class="chip period" role="radio" aria-checked="true"><span class="body">Medium</span></button>
+    <button class="chip period" role="radio" aria-checked="false"><span class="body">Heavy</span></button>
+  </div>
+</div>
+</body>
+</html>

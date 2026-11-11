@@ -1,0 +1,70 @@
+<!-- @dsCard height=288 -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Bloom</title>
+<style>
+  html, body { margin:0; height:100%; }
+  body { background:var(--background); color:var(--ink); font-family:var(--font-body); overflow:hidden; }
+  .cover { position:relative; width:960px; height:288px; overflow:hidden; background:var(--background); }
+  .art { position:absolute; top:0; left:480px; width:480px; height:288px; overflow:hidden; }
+  .art svg { display:block; }
+  .plum { fill:var(--hero-start); }
+  .primary { fill:var(--primary); }
+  .petal { fill:var(--petal); }
+  .rose { fill:var(--rose); }
+  .ground { fill:var(--background); }
+  .blk { rx:var(--radius-xl); }
+  .pill { rx:32px; }
+  .disc { rx:52px; }
+  .words { position:absolute; left:var(--space-huge); bottom:var(--space-xxxl); max-width:440px; }
+  .name { margin:0; font-family:var(--font-wordmark); font-weight:600; font-size:120px; line-height:.92; letter-spacing:-.01em; color:var(--ink); }
+  .tag { margin:var(--space-sm) 0 0 4px; font-size:14px; line-height:20px; color:var(--ink-muted); }
+</style>
+</head>
+<body>
+<div class="cover">
+<div class="art" aria-hidden="true">
+<svg viewBox="0 0 480 288" width="480" height="288">
+<!--
+  blocks      hero-start slab 240×216 bled off the top and right (the plum people know from the hero card) · primary 160×176 bled off the bottom · petal pill 160×64 · rose half-disc 104 wide — ≈34% of 960×288
+  arrangement one tall plum slab with satellites, staggered left and down, space-lg gutters throughout
+  pattern     leaves — the literal motif of the Bloom mark's two leaves and the "soft, rounded" principle: lenses of two radius-md (18px) arcs, 18 in rose across the slab at a space-huge pitch with alternate rows offset half a step, 3 cut from the ground into the primary block
+  scales      gutters space-lg (16); top inset space-xxxl (32); pitch space-huge (48); block corners radius-xl (34); pill and disc rx half the short side
+-->
+<defs><path id="leaf" d="M0 20 A18 18 0 0 1 20 0 A18 18 0 0 1 0 20Z"/></defs>
+<rect class="plum blk" x="240" y="-34" width="274" height="250" rx="34"/>
+<rect class="primary blk" x="64" y="112" width="160" height="210" rx="34"/>
+<rect class="petal pill" x="64" y="32" width="160" height="64" rx="32"/>
+<rect class="rose disc" x="240" y="232" width="104" height="104" rx="52"/>
+<use href="#leaf" class="rose" x="254" y="14"/>
+<use href="#leaf" class="rose" x="302" y="14"/>
+<use href="#leaf" class="rose" x="350" y="14"/>
+<use href="#leaf" class="rose" x="398" y="14"/>
+<use href="#leaf" class="rose" x="446" y="14"/>
+<use href="#leaf" class="rose" x="278" y="62"/>
+<use href="#leaf" class="rose" x="326" y="62"/>
+<use href="#leaf" class="rose" x="374" y="62"/>
+<use href="#leaf" class="rose" x="422" y="62"/>
+<use href="#leaf" class="rose" x="254" y="110"/>
+<use href="#leaf" class="rose" x="302" y="110"/>
+<use href="#leaf" class="rose" x="350" y="110"/>
+<use href="#leaf" class="rose" x="398" y="110"/>
+<use href="#leaf" class="rose" x="446" y="110"/>
+<use href="#leaf" class="rose" x="278" y="158"/>
+<use href="#leaf" class="rose" x="326" y="158"/>
+<use href="#leaf" class="rose" x="374" y="158"/>
+<use href="#leaf" class="rose" x="422" y="158"/>
+<use href="#leaf" class="ground" x="78" y="238"/>
+<use href="#leaf" class="ground" x="126" y="238"/>
+<use href="#leaf" class="ground" x="174" y="238"/>
+</svg>
+</div>
+<div class="words">
+  <p class="name">Bloom</p>
+  <p class="tag">Your cycle, understood.</p>
+</div>
+</div>
+</body>
+</html>
