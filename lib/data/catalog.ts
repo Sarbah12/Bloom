@@ -103,7 +103,7 @@ export type ExerciseLevel = 'none' | 'light' | 'moderate' | 'intense';
 export const EXERCISE_LEVELS: { value: ExerciseLevel; label: string }[] = [
   { value: 'none', label: 'Rest' },
   { value: 'light', label: 'Light' },
-  { value: 'moderate', label: 'Moderate' },
+  { value: 'moderate', label: 'Medium' },
   { value: 'intense', label: 'Intense' },
 ];
 

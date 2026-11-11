@@ -17,11 +17,14 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { DataProvider, useCycle, useData } from '@/lib/data/store';
 import { useReminderSync } from '@/lib/notifications';
+import { clearSharedReports } from '@/lib/report/share';
 import { AppLock } from '@/lib/security/AppLock';
 import { CloudAutoSync } from '@/lib/supabase/useCloudSync';
 import { ThemeProvider, useTheme } from '@/theme/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
+// A report shared last time has done its job; don't keep it around.
+clearSharedReports();
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({

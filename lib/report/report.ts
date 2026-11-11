@@ -71,6 +71,7 @@ function topCounts(lists: (readonly string[] | undefined)[], label: (k: string) 
 
 const avg = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
 const one = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
+const count = (n: number, word: string, many = `${word}s`) => `${one(n)} ${n === 1 ? word : many}`;
 
 export function buildReport(input: ReportInput, options: ReportOptions): ReportModel {
   const { analysis, today, formatDay } = input;
@@ -101,7 +102,7 @@ export function buildReport(input: ReportInput, options: ReportOptions): ReportM
     { label: 'Cycles covered', value: String(lengths.length) },
     { label: 'Average cycle', value: lengths.length ? `${Math.round(avg(lengths)!)} days` : '—' },
     { label: 'Shortest – longest', value: lengths.length ? `${Math.min(...lengths)} – ${Math.max(...lengths)} days` : '—' },
-    { label: 'Average period', value: periodLengths.length ? `${one(Math.round(avg(periodLengths)! * 10) / 10)} days` : '—' },
+    { label: 'Average period', value: periodLengths.length ? count(Math.round(avg(periodLengths)! * 10) / 10, 'day') : '—' },
   ];
   if (analysis.nextPeriod) {
     stats.push({
@@ -117,7 +118,7 @@ export function buildReport(input: ReportInput, options: ReportOptions): ReportM
     return {
       name: m.name,
       detail: [medicationKind(m.kind).label, m.dose].filter(Boolean).join(' · '),
-      adherence: a.total ? `Ticked on ${a.taken} of the last ${a.total} days` : 'Added recently',
+      adherence: a.total >= 2 ? `Ticked on ${a.taken} of the last ${a.total} days` : 'Added recently',
     };
   });
 
@@ -127,7 +128,8 @@ export function buildReport(input: ReportInput, options: ReportOptions): ReportM
   const weights = entries.filter((d) => d.weightKg !== undefined);
   const lifestyle: ReportModel['lifestyle'] = [];
   if (sleep !== null) lifestyle.push({ label: 'Sleep', value: `${one(Math.round(sleep * 10) / 10)} h a night on average` });
-  if (water !== null) lifestyle.push({ label: 'Water', value: `${one(Math.round(water * 10) / 10)} glasses a day on average` });
+  if (water !== null)
+    lifestyle.push({ label: 'Water', value: `${count(Math.round(water * 10) / 10, 'glass', 'glasses')} a day on average` });
   if (exercise.length) {
     const active = exercise.filter((d) => d.exercise !== 'none').length;
     const common = topCounts(
@@ -200,7 +202,7 @@ export function reportHtml(m: ReportModel): string {
 
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${esc(m.title)}</title><style>
   @page { margin: 16mm 14mm; }
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   body { font-family: -apple-system, 'Helvetica Neue', Roboto, Arial, sans-serif; color: #2D1A24; font-size: 11pt; line-height: 1.45; margin: 0; }
   header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #A23B6D; padding-bottom: 8px; margin-bottom: 14px; }
   h1 { font-size: 20pt; margin: 0; letter-spacing: -0.3px; }
@@ -208,7 +210,7 @@ export function reportHtml(m: ReportModel): string {
   .meta { text-align: right; color: #694F5B; font-size: 9.5pt; }
   h2 { font-size: 11.5pt; color: #7A2550; margin: 16px 0 6px; text-transform: uppercase; letter-spacing: 0.6px; }
   .stats { display: flex; flex-wrap: wrap; gap: 8px; }
-  .stat { flex: 1 1 22%; background: #F8EDF1; border-radius: 8px; padding: 8px 10px; }
+  .stat { flex: 1 1 0; min-width: 17%; background: #F8EDF1; border-radius: 8px; padding: 8px 10px; }
   .stat b { display: block; font-size: 13pt; }
   .stat span { color: #694F5B; font-size: 9pt; }
   table { width: 100%; border-collapse: collapse; }
@@ -235,7 +237,7 @@ ${section(
     ? `<table><tr><th>Period started</th><th>Cycle length</th><th>Period length</th><th>Heavy days</th><th>Cramp days</th><th>Worst pain</th></tr>${m.cycles
         .map(
           (c) =>
-            `<tr><td>${esc(c.start)}</td><td class="num">${c.length === null ? 'Current' : `${c.length} days`}</td><td class="num">${c.periodLength} days</td><td class="num">${c.heavyDays}</td><td class="num">${c.crampDays}</td><td>${c.worstPain ?? '—'}</td></tr>`,
+            `<tr><td>${esc(c.start)}</td><td class="num">${c.length === null ? 'Current' : count(c.length, 'day')}</td><td class="num">${count(c.periodLength, 'day')}</td><td class="num">${c.heavyDays}</td><td class="num">${c.crampDays}</td><td>${c.worstPain ?? '—'}</td></tr>`,
         )
         .join('')}</table>`
     : '<p class="muted">No periods logged in this range.</p>',

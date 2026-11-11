@@ -52,7 +52,7 @@ export default function DoctorReport() {
   const create = async () => {
     setBusy(true);
     try {
-      const ok = await shareReportPdf(reportHtml(model));
+      const ok = await shareReportPdf(reportHtml(model), `Bloom cycle summary ${today}.pdf`);
       if (!ok) notify('Sharing isn’t available', 'This device can’t open the share sheet.');
     } catch (e) {
       console.warn('Bloom: report failed', e);
