@@ -11,7 +11,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.sarbah.bloom",
-      "buildNumber": "2",
+      "buildNumber": "3",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSFaceIDUsageDescription": "Bloom uses Face ID to keep your health records locked."
@@ -117,6 +117,7 @@
     "plugins": [
       "./plugins/with-local-notifications-only",
       "./plugins/with-min-pod-deployment-target",
+      "./plugins/with-scene-lifecycle",
       "expo-router",
       "expo-font",
       "expo-secure-store",
