@@ -24,15 +24,17 @@ const ICON = {
   brandLeaf: '#E8A1BE',
 };
 
-async function png(name: string, svg: string, size: number) {
-  const buffer = await sharp(Buffer.from(svg)).resize(size, size).png().toBuffer();
+async function png(name: string, svg: string, size: number, opaque = false) {
+  // App Store Connect rejects an app icon with an alpha channel, even a fully opaque one.
+  const image = sharp(Buffer.from(svg)).resize(size, size);
+  const buffer = await (opaque ? image.removeAlpha() : image).png().toBuffer();
   writeFileSync(join(out, name), buffer);
   console.log(`  ${name} (${size}×${size})`);
 }
 
 console.log('icons:');
 // iOS / store icon: full-bleed gradient, no transparency allowed.
-await png('icon.png', markSvg({ size: 1024, mark: ICON.cream, leaf: ICON.leaf, background: ICON.gradient, scale: 0.56 }), 1024);
+await png('icon.png', markSvg({ size: 1024, mark: ICON.cream, leaf: ICON.leaf, background: ICON.gradient, scale: 0.56 }), 1024, true);
 // Android adaptive icon: the system crops to a circle/squircle, so keep the
 // artwork inside the central 66% safe zone.
 await png('android-icon-foreground.png', markSvg({ size: 1024, mark: ICON.cream, leaf: ICON.leaf, background: null, scale: 0.42 }), 1024);

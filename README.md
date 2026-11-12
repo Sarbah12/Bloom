@@ -145,6 +145,11 @@ Before launch, add SMTP (`GOTRUE_SMTP_*`) and set
 `GOTRUE_MAILER_AUTOCONFIRM=false` so emails are confirmed and password resets
 can be sent.
 
+**Website** (`site/`): home, privacy policy and support pages, served by
+Caddy on the Railway `website` service —
+https://website-production-cc3c0a16.up.railway.app. Deploy changes with
+`railway up site --path-as-root --service website`.
+
 **Backups:** nightly, encrypted, to a private Railway bucket — see
 [`docs/BACKUPS.md`](docs/BACKUPS.md). `npm run backup:restore` tests a restore.
 

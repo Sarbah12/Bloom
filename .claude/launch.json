@@ -23,6 +23,20 @@
         "8081"
       ],
       "port": 8081
+    },
+    {
+      "name": "bloom-site",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8097",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "site"
+      ],
+      "port": 8097
     }
   ]
 }

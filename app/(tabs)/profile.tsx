@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Platform, View } from 'react-native';
+import { Linking, Platform, View } from 'react-native';
 
 import { Segmented } from '@/components/ui/Controls';
 import { Notice } from '@/components/ui/Feedback';
@@ -8,6 +8,7 @@ import { ListGroup, ListRow } from '@/components/ui/ListRow';
 import { supportsWidget } from '@/lib/widget';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
+import { PRIVACY_POLICY_URL, SUPPORT_URL } from '@/lib/content/links';
 import { MEDICAL_DISCLAIMER } from '@/lib/content/phases';
 import { useData } from '@/lib/data/store';
 import { useRestore } from '@/lib/data/useRestore';
@@ -210,6 +211,8 @@ export default function Profile() {
 
       <ListGroup title="About">
         <ListRow icon="info" title="About Bloom" subtitle={MEDICAL_DISCLAIMER} />
+        <ListRow icon="shield" title="Privacy policy" onPress={() => Linking.openURL(PRIVACY_POLICY_URL)} testID="privacy-policy-link" />
+        <ListRow icon="help-circle" title="Help & support" onPress={() => Linking.openURL(SUPPORT_URL)} />
         {__DEV__ ? (
           <ListRow
             icon="layout"

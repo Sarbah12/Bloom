@@ -1,0 +1,24 @@
+# Bloom's public website: privacy policy, support and home page.
+{
+	admin off
+	auto_https off
+}
+:{$PORT:8080} {
+	root * /srv
+	encode gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy no-referrer
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+		Content-Security-Policy "default-src 'self'; img-src 'self'; style-src 'self'; font-src 'self'; script-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+		-Server
+	}
+	# /privacy and /support work without .html
+	try_files {path} {path}.html
+	file_server
+	log {
+		output discard
+	}
+}

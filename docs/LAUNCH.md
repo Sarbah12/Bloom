@@ -16,6 +16,8 @@ What the code can't settle on its own. Work top to bottom.
 - [ ] **Test on real phones.** Keychain/Keystore storage, App Lock, the app
       switcher cover and local notifications only run natively. Build a dev
       client for iOS and Android and walk every screen.
+- [x] **Privacy policy** live at `site/privacy.html` (Railway `website`
+      service) — needs a legal review. Terms of use still to write.
 - [ ] **Privacy policy and terms**, written for reproductive-health data (GDPR
       special-category data; US state laws such as Washington's My Health My
       Data Act). Link them in the app and the store listings.
