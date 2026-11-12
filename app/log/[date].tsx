@@ -53,6 +53,7 @@ export default function DailyLog() {
   const [temp, setTemp] = useState(log?.temperatureC !== undefined ? String(cToDisplay(log.temperatureC, units)) : '');
   const [bodyError, setBodyError] = useState<{ weight?: string; temp?: string }>({});
   const meds = activeMeds(data.medications);
+  const peri = data.cycle.lifeStage === 'perimenopause';
 
   const saveWeight = () => {
     const v = parseDecimal(weight);
@@ -162,7 +163,7 @@ export default function DailyLog() {
 
       <SectionHeader title="Symptoms" />
       <ChipGroup>
-        {SYMPTOMS.map((s) => (
+        {SYMPTOMS.filter((s) => !('group' in s) || peri || log?.symptoms.includes(s.key)).map((s) => (
           <Chip
             key={s.key}
             label={s.label}

@@ -54,6 +54,8 @@ insert into public.daily_logs (log_date, flow, energy, note, relief) values ('20
 insert into public.symptom_logs (log_date, symptom, severity) values ('2026-10-01', 'cramps', 2);
 insert into public.mood_logs (log_date, mood) values ('2026-10-01', 'anxious');
 insert into public.medications (id, name, kind) values ('30000000-0000-4000-8000-000000000001', 'Iron', 'iron');
+insert into public.medications (id, name, kind, pack_type, pack_start) values ('30000000-0000-4000-8000-000000000002', 'Pill', 'pill', 'combined_21_7', '2026-10-01');
+update public.cycle_settings set life_stage = 'perimenopause';
 update public.daily_logs set sleep_hours = 7.5, water_glasses = 6, exercise = 'light', weight_kg = 64.5, temperature_c = 36.6,
   meds_taken = '{30000000-0000-4000-8000-000000000001}' where log_date = '2026-10-01';
 insert into public.journal_entries (id, entry_date, title, body)
@@ -84,6 +86,11 @@ do $$ begin
   if (select granted from public.current_consents where purpose = 'cloud_backup') is not true then
     raise exception 'current_consents view wrong';
   end if;
+  begin
+    update public.medications set pack_type = 'combined_21_7', pack_start = '2026-10-01' where kind = 'iron';
+    raise exception 'a pill pack was attached to a non-pill medication';
+  exception when check_violation then null;
+  end;
   begin
     update public.daily_logs set sleep_hours = 30 where log_date = '2026-10-01';
     raise exception 'an impossible sleep value was stored';

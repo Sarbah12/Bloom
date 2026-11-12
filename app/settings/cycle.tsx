@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { View } from 'react-native';
 
-import { Stepper, TextField } from '@/components/ui/Controls';
+import { Segmented, Stepper, TextField } from '@/components/ui/Controls';
 import { Notice } from '@/components/ui/Feedback';
 import { Card } from '@/components/ui/Card';
 import { Screen } from '@/components/ui/Screen';
@@ -53,6 +53,25 @@ export default function CycleSettings() {
           unit="days"
           onChange={(typicalPeriodLength) => actions.updateCycleSettings({ typicalPeriodLength })}
         />
+      </Card>
+      <Card style={{ marginTop: space.md }} testID="life-stage">
+        <Text variant="headline" style={{ marginBottom: space.sm }}>
+          Life stage
+        </Text>
+        <Segmented
+          label="Life stage"
+          options={[
+            { value: 'cycles', label: 'Regular cycles' },
+            { value: 'perimenopause', label: 'Perimenopause' },
+          ]}
+          value={data.cycle.lifeStage ?? 'cycles'}
+          onChange={(lifeStage) => actions.updateCycleSettings({ lifeStage })}
+        />
+        <Text variant="footnote" tone="muted" style={{ marginTop: space.sm }}>
+          {data.cycle.lifeStage === 'perimenopause'
+            ? 'Estimates are a rougher guide, irregular cycles aren’t flagged as unusual, and the check-in includes hot flushes, night sweats and other perimenopause symptoms.'
+            : 'Choose perimenopause if your periods are changing in your 40s or so — Bloom will adjust estimates and add related symptoms.'}
+        </Text>
       </Card>
       <View style={{ height: space.xxl }} />
       {analysis.stats.basis === 'history' ? (

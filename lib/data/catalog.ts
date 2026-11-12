@@ -28,7 +28,16 @@ export const SYMPTOMS = [
   { key: 'constipation', label: 'Constipation', icon: 'minus-circle' },
   { key: 'diarrhea', label: 'Diarrhoea', icon: 'alert-circle' },
   { key: 'dizziness', label: 'Dizziness', icon: 'loader' },
-] as const satisfies readonly { key: string; label: string; icon: FeatherName }[];
+  // Perimenopause: shown in the check-in when that life stage is on.
+  { key: 'hot_flushes', label: 'Hot flushes', icon: 'thermometer', group: 'peri' },
+  { key: 'night_sweats', label: 'Night sweats', icon: 'cloud-drizzle', group: 'peri' },
+  { key: 'brain_fog', label: 'Brain fog', icon: 'cloud', group: 'peri' },
+  { key: 'joint_pain', label: 'Joint aches', icon: 'target', group: 'peri' },
+  { key: 'palpitations', label: 'Palpitations', icon: 'heart', group: 'peri' },
+  { key: 'vaginal_dryness', label: 'Vaginal dryness', icon: 'feather', group: 'peri' },
+] as const satisfies readonly { key: string; label: string; icon: FeatherName; group?: 'peri' }[];
+
+export const isPeriSymptom = (key: string) => SYMPTOMS.some((s) => s.key === key && 'group' in s);
 
 export type SymptomKey = (typeof SYMPTOMS)[number]['key'];
 

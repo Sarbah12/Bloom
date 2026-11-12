@@ -4,6 +4,7 @@ import type { ISODate } from '@/lib/cycle/dates';
 import { analyzeCycles } from '@/lib/cycle/engine';
 import type { Energy, ExerciseLevel, Flow, GoalKey, MedicationKind, MoodKey, PainLevel, ReliefKey, SymptomKey } from '@/lib/data/catalog';
 import type { AppData, DailyLog, JournalEntry, Medication, Reminders, StoredPeriod, Timestamp } from '@/lib/data/types';
+import type { PackType } from '@/lib/data/pill';
 import { mergeSnapshot, type PushPlan, type RemoteSnapshot } from '@/lib/sync/merge';
 
 import { supabase } from './client';
@@ -85,6 +86,9 @@ interface MedicationRow {
   dose: string | null;
   reminder_enabled: boolean;
   reminder_time: string;
+  pack_type: string | null;
+  pack_start: string | null;
+  pack_set_on: string | null;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
@@ -110,7 +114,11 @@ async function pull(): Promise<RemoteSnapshot> {
     selectAll<ChildRow>('symptom_logs', 'log_date,symptom,severity', 'id'),
     selectAll<ChildRow>('mood_logs', 'log_date,mood', 'id'),
     selectAll<JournalRow>('journal_entries', 'id,entry_date,title,body,created_at,updated_at,deleted_at', 'id'),
-    selectAll<MedicationRow>('medications', 'id,name,kind,dose,reminder_enabled,reminder_time,created_at,updated_at,deleted_at', 'id'),
+    selectAll<MedicationRow>(
+      'medications',
+      'id,name,kind,dose,reminder_enabled,reminder_time,pack_type,pack_start,pack_set_on,created_at,updated_at,deleted_at',
+      'id',
+    ),
   ]);
   const [{ data: profile }, { data: cycle }, { data: reminders }] = await Promise.all([
     check(client().from('profiles').select('*').maybeSingle()),
@@ -198,6 +206,10 @@ async function pull(): Promise<RemoteSnapshot> {
         createdAt: m.created_at,
         updatedAt: m.updated_at,
         deletedAt: m.deleted_at ?? undefined,
+        pack:
+          m.pack_type && m.pack_start
+            ? { type: m.pack_type as PackType, startDate: m.pack_start, setOn: m.pack_set_on ?? undefined }
+            : undefined,
       };
     }),
     profile: profile
@@ -217,7 +229,11 @@ async function pull(): Promise<RemoteSnapshot> {
     cycle: cycle
       ? {
           updatedAt: cycle.updated_at,
-          value: { typicalCycleLength: cycle.typical_cycle_length, typicalPeriodLength: cycle.typical_period_length },
+          value: {
+            typicalCycleLength: cycle.typical_cycle_length,
+            typicalPeriodLength: cycle.typical_period_length,
+            lifeStage: cycle.life_stage === 'perimenopause' ? 'perimenopause' : undefined,
+          },
         }
       : undefined,
     reminders: reminders
@@ -282,6 +298,9 @@ async function push(plan: PushPlan, userId: string): Promise<void> {
           dose: m.deletedAt ? null : (m.dose ?? null),
           reminder_enabled: m.deletedAt ? false : m.reminder.enabled,
           reminder_time: `${String(m.reminder.hour).padStart(2, '0')}:${String(m.reminder.minute).padStart(2, '0')}`,
+          pack_type: m.deletedAt ? null : (m.pack?.type ?? null),
+          pack_start: m.deletedAt ? null : (m.pack?.startDate ?? null),
+          pack_set_on: m.deletedAt ? null : (m.pack?.setOn ?? null),
           created_at: m.createdAt,
           updated_at: m.updatedAt,
           deleted_at: m.deletedAt ?? null,
@@ -360,6 +379,7 @@ async function push(plan: PushPlan, userId: string): Promise<void> {
         user_id: userId,
         typical_cycle_length: plan.cycle.value.typicalCycleLength,
         typical_period_length: plan.cycle.value.typicalPeriodLength,
+        life_stage: plan.cycle.value.lifeStage ?? 'cycles',
         updated_at: plan.cycle.updatedAt,
       }),
     );

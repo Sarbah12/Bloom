@@ -36,7 +36,7 @@ export interface DataActions {
   updateDay(date: ISODate, patch: Partial<Omit<DailyLog, 'date' | 'updatedAt'>>): void;
   saveJournal(entry: Pick<JournalEntry, 'title' | 'body' | 'date'> & { id?: string }): string;
   deleteJournal(id: string): void;
-  saveMedication(med: Pick<Medication, 'name' | 'kind' | 'dose' | 'reminder'> & { id?: string }): string;
+  saveMedication(med: Pick<Medication, 'name' | 'kind' | 'dose' | 'reminder' | 'pack'> & { id?: string }): string;
   deleteMedication(id: string): void;
   /** Ticks or unticks a medication for a day. */
   toggleMedTaken(date: ISODate, medId: string): void;
@@ -354,6 +354,9 @@ export function useCycle(): { analysis: CycleAnalysis; today: ISODate } {
   const age = data.profile.birthYear ? Number(today.slice(0, 4)) - data.profile.birthYear : undefined;
   const periods = data.periods;
   const cycle = data.cycle;
-  const analysis = useMemo(() => analyzeCycles(activePeriods({ periods } as AppData), cycle, today, { age }), [periods, cycle, today, age]);
+  const analysis = useMemo(
+    () => analyzeCycles(activePeriods({ periods } as AppData), cycle, today, { age, lifeStage: cycle.lifeStage }),
+    [periods, cycle, today, age],
+  );
   return { analysis, today };
 }

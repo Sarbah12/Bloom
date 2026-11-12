@@ -81,3 +81,18 @@ describe('lifestyle across the cycle', () => {
     assert.deepEqual(notes, []);
   });
 });
+
+describe('home screen widget', async () => {
+  const { widgetSnapshot } = await import('../widget-snapshot.ts');
+  it('shares only cycle numbers', () => {
+    const s = widgetSnapshot(a, today, false);
+    assert.deepEqual(Object.keys(s).sort(), ['asOf', 'average', 'cycleDay', 'daysUntil', 'detailed', 'hasData', 'periodDay']);
+    assert.equal(s.hasData, 1);
+    assert.equal(s.cycleDay, a.today!.cycleDay);
+    assert.equal(s.detailed, 0);
+  });
+  it('says there is nothing to show without history', () => {
+    const empty = analyzeCycles([], settings, today);
+    assert.deepEqual(widgetSnapshot(empty, today, true), { hasData: 0, asOf: today, detailed: 1 });
+  });
+});

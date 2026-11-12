@@ -184,6 +184,25 @@ describe('restoring a backup', () => {
     assert.equal(r.data.medications[1].reminder.enabled, false);
   });
 
+  it('keeps pill packs only on pills, and the life stage', () => {
+    const r = parseBackup(
+      exportFile({
+        cycle: { typicalCycleLength: 30, typicalPeriodLength: 6, lifeStage: 'perimenopause' },
+        medications: [
+          { id: 'p', name: 'Pill', kind: 'pill', pack: { type: 'combined_21_7', startDate: '2026-11-01', setOn: '2026-11-02' } },
+          { id: 'i', name: 'Iron', kind: 'iron', pack: { type: 'combined_21_7', startDate: '2026-11-01' } },
+          { id: 'x', name: 'Odd', kind: 'pill', pack: { type: 'weekly', startDate: '2026-11-01' } },
+        ],
+      }),
+      NOW,
+    );
+    assert.ok(r.ok);
+    assert.deepEqual(r.data.medications[0].pack, { type: 'combined_21_7', startDate: '2026-11-01', setOn: '2026-11-02' });
+    assert.equal(r.data.medications[1].pack, undefined);
+    assert.equal(r.data.medications[2].pack, undefined);
+    assert.equal(r.data.cycle.lifeStage, 'perimenopause');
+  });
+
   it('marks a restored app as set up', () => {
     const r = parseBackup(exportFile({ profile: { goals: [] } }), NOW);
     assert.ok(r.ok && r.data.profile.onboardedAt === NOW);

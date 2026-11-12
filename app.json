@@ -19,6 +19,9 @@
       "entitlements": {
         "keychain-access-groups": [
           "$(AppIdentifierPrefix)com.sarbah.bloom"
+        ],
+        "com.apple.security.application-groups": [
+          "group.com.sarbah.bloom"
         ]
       }
     },
@@ -79,6 +82,15 @@
           "dark": {
             "image": "./assets/images/splash-icon.png",
             "backgroundColor": "#140D11"
+          }
+        }
+      ],
+      "@bacons/apple-targets",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "16.4"
           }
         }
       ]

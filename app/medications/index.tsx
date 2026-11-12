@@ -44,7 +44,7 @@ export default function Medications() {
               subtitle={[m.dose, m.reminder.enabled ? `Reminder at ${formatTime(m.reminder.hour, m.reminder.minute)}` : 'No reminder']
                 .filter(Boolean)
                 .join(' · ')}
-              onPress={() => router.push(`/medications/${m.id}`)}
+              onPress={() => router.push(m.pack ? `/pill/${m.id}` : `/medications/${m.id}`)}
               last={i === meds.length - 1}
             />
           ))}

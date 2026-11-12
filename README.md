@@ -3,8 +3,9 @@
 A privacy-first menstrual health app for iOS and Android: period tracking, cycle
 predictions with honest confidence, symptom and mood logging, pattern insights,
 cycle-change and deviation alerts, cramp relief, symptom trend charts, body and
-lifestyle tracking, medication reminders, a doctor visit report (PDF), a
-private journal and sourced health education.
+lifestyle tracking, medication reminders, a contraceptive pill pack tracker,
+perimenopause support, a discreet iOS home screen widget, a doctor visit
+report (PDF), a private journal and sourced health education.
 
 Built with Expo SDK 54 (React Native 0.81, expo-router). One codebase for both
 platforms; a browser build exists only for previewing during development.
@@ -72,6 +73,7 @@ theme/tokens.ts      every colour, type size, radius and shadow
 lib/cycle/           the cycle engine (pure, fully tested) — predictions, phases, notices, patterns,
                      changes and deviations, symptom trends, lifestyle across the cycle
 lib/report/          doctor visit report: facts (pure, tested) → HTML → PDF on the phone
+targets/widget/      iOS widget (SwiftUI/WidgetKit); reads cycle numbers shared via the App Group
 lib/data/            app state, persisted to the encrypted vault
 lib/storage/         AES-256-GCM vault; key in iOS Keychain / Android Keystore
 lib/supabase/        optional auth + backup sync (last-write-wins with tombstones)
@@ -116,10 +118,36 @@ window). Highlights:
 
 ## Backend (optional cloud backup)
 
-1. Create a Supabase project.
-2. Apply `supabase/migrations/*.sql` (`supabase db push`, or paste into the SQL editor).
-3. Auth → URL configuration: add `bloom://account` and `bloom://account/reset` as redirect URLs.
-4. Copy `.env.example` to `.env` and fill in the project URL and anon key.
+Cloud backup runs on **self-hosted Supabase on Railway** (project `bloom`,
+template “Supabase (Self-Hosted, Full Stack)”: Postgres, Auth, PostgREST,
+Storage, Meta, Studio and a Kong gateway). Only the gateway is public:
+
+- API: `https://kong-production-2f400206.up.railway.app`
+- Studio (dashboard): same URL at `/`, behind basic auth —
+  `DASHBOARD_USERNAME` / `DASHBOARD_PASSWORD` in the kong service's Variables.
+- Keys: `ANON_KEY` (public, goes in the app) and `SERVICE_ROLE_KEY` (admin,
+  never in the app or git) are in the kong service's Variables.
+
+**App:** `.env` holds `EXPO_PUBLIC_SUPABASE_URL` and
+`EXPO_PUBLIC_SUPABASE_ANON_KEY` (see `.env.example`). Rebuild after changing it.
+
+**Migrations:** `supabase/migrations/*.sql`, applied once each and recorded in
+`supabase_migrations.schema_migrations`:
+
+```
+SUPABASE_URL=https://kong-production-2f400206.up.railway.app \
+SUPABASE_SERVICE_ROLE_KEY=<from Railway> npm run migrate:remote
+```
+
+**Auth settings** (auth service Variables): `GOTRUE_SITE_URL=bloom://account`,
+`GOTRUE_URI_ALLOW_LIST` includes `bloom://account` and `bloom://account/reset`.
+Before launch, add SMTP (`GOTRUE_SMTP_*`) and set
+`GOTRUE_MAILER_AUTOCONFIRM=false` so emails are confirmed and password resets
+can be sent.
+
+Do not change `JWT_SECRET`, `POSTGRES_PASSWORD` or the keys after launch
+without following Supabase's rotation guide — every signed-in phone would be
+signed out and the app's key would stop working.
 
 ## Brand
 

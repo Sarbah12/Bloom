@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Chip, ChipGroup } from '@/components/ui/Chip';
-import { TextField } from '@/components/ui/Controls';
+import { CompactStepper, TextField } from '@/components/ui/Controls';
 import { SectionHeader } from '@/components/ui/Feedback';
 import { ListGroup, ListRow } from '@/components/ui/ListRow';
 import { Screen } from '@/components/ui/Screen';
@@ -13,6 +13,7 @@ import { Text } from '@/components/ui/Text';
 import { toLocalISO } from '@/lib/cycle/dates';
 import { MEDICATION_KINDS, type MedicationKind } from '@/lib/data/catalog';
 import { adherence, medHistory } from '@/lib/data/meds';
+import { PACK_TYPES, packDay, packSpec, startForPillNumber, type PackType } from '@/lib/data/pill';
 import { useCycle, useData } from '@/lib/data/store';
 import { formatDate, formatTime } from '@/lib/format';
 import { requestReminderPermission, supportsReminders } from '@/lib/notifications';
@@ -34,6 +35,10 @@ export default function MedicationEditor() {
   const [dose, setDose] = useState(existing?.dose ?? '');
   const [reminder, setReminder] = useState(existing?.reminder ?? { enabled: false, hour: 8, minute: 0 });
   const [error, setError] = useState<string>();
+  const [packType, setPackType] = useState<PackType>(existing?.pack?.type ?? 'combined_21_7');
+  const [pillNumber, setPillNumber] = useState<number | undefined>(existing?.pack ? packDay(existing.pack, today)?.day : undefined);
+  const spec = packSpec(packType);
+  const isPill = kind === 'pill';
 
   const history = useMemo(
     () => (existing ? medHistory(existing, data.days, today, toLocalISO(new Date(existing.createdAt))) : []),
@@ -43,7 +48,13 @@ export default function MedicationEditor() {
 
   const save = () => {
     if (!name.trim()) return setError('Give it a name, such as “Ibuprofen” or “Iron”.');
-    actions.saveMedication({ id: existing?.id, name, kind, dose: dose.trim() || undefined, reminder });
+    let pack = undefined;
+    if (isPill && pillNumber !== undefined) {
+      const startDate = startForPillNumber(today, pillNumber);
+      const unchanged = existing?.pack && existing.pack.type === packType && existing.pack.startDate === startDate;
+      pack = unchanged ? existing!.pack : { type: packType, startDate, setOn: today };
+    }
+    actions.saveMedication({ id: existing?.id, name, kind, dose: dose.trim() || undefined, reminder, pack });
     router.back();
   };
 
@@ -98,6 +109,53 @@ export default function MedicationEditor() {
       <View style={{ marginTop: space.xl }}>
         <TextField label="Dose (optional)" value={dose} onChangeText={setDose} placeholder="For example, 400 mg" maxLength={40} />
       </View>
+
+      {isPill ? (
+        <>
+          <SectionHeader title="Pill pack" />
+          <ChipGroup>
+            {PACK_TYPES.map((p) => (
+              <Chip
+                key={p.type}
+                role="radio"
+                label={p.label}
+                selected={packType === p.type}
+                onPress={() => {
+                  setPackType(p.type);
+                  if (pillNumber !== undefined) setPillNumber(Math.min(pillNumber, p.length));
+                }}
+              />
+            ))}
+          </ChipGroup>
+          <Text variant="footnote" tone="muted" style={{ marginTop: space.sm }}>
+            {spec.detail}. Your leaflet says which kind you have.
+          </Text>
+          <Card style={{ marginTop: space.lg }} testID="pill-number">
+            <View style={styles.pillRow}>
+              <View style={{ flex: 1 }}>
+                <Text variant="headline">Today’s pill</Text>
+                <Text variant="footnote" tone="muted">
+                  {pillNumber === undefined
+                    ? 'Set it to track your pack'
+                    : pillNumber > spec.active
+                      ? spec.gap === 'break'
+                        ? `Break day ${pillNumber - spec.active} of ${spec.length - spec.active}`
+                        : `Inactive pill ${pillNumber}`
+                      : `Pill ${pillNumber} of ${spec.active}`}
+                </Text>
+              </View>
+              <CompactStepper
+                label="Today’s pill number in the pack"
+                value={pillNumber}
+                start={1}
+                min={1}
+                max={spec.length}
+                onChange={setPillNumber}
+              />
+            </View>
+          </Card>
+        </>
+      ) : null}
 
       <SectionHeader title="Reminder" />
       <ListGroup flush>
@@ -183,6 +241,7 @@ export default function MedicationEditor() {
 }
 
 const styles = StyleSheet.create({
+  pillRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   dot: { width: 16, height: 16, borderRadius: 8 },
   legend: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' },

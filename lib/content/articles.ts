@@ -7,7 +7,7 @@
  * needs a named reviewer and a review date (see docs/LAUNCH.md).
  */
 
-export type ArticleCategory = 'Basics' | 'Symptoms' | 'Mood' | 'Fertility' | 'Care';
+export type ArticleCategory = 'Basics' | 'Symptoms' | 'Mood' | 'Fertility' | 'Menopause' | 'Care';
 
 export interface Article {
   slug: string;
@@ -248,6 +248,93 @@ export const ARTICLES: Article[] = [
         url: 'https://doi.org/10.1056/NEJM199512073332301',
       },
       { label: 'NHS — Trying to get pregnant', url: 'https://www.nhs.uk/pregnancy/trying-for-a-baby/' },
+    ],
+    review: { status: 'pending' },
+  },
+  {
+    slug: 'perimenopause',
+    title: 'Perimenopause: what to expect',
+    category: 'Menopause',
+    minutes: 4,
+    summary: 'The years before your last period: what changes, how long it lasts, and when to talk to a GP.',
+    sections: [
+      {
+        paragraphs: [
+          'Perimenopause is the time when your hormones start to change before your periods stop for good. It usually begins in your 40s, but can start earlier, and it often lasts several years. Menopause is when you haven’t had a period for 12 months.',
+          'Everyone’s experience is different. Some people have few symptoms; for others they affect sleep, work and relationships.',
+        ],
+      },
+      {
+        heading: 'Common changes',
+        bullets: [
+          'Periods that come closer together or further apart, or get lighter or heavier.',
+          'Hot flushes and night sweats.',
+          'Trouble sleeping, low mood, anxiety or feeling irritable.',
+          'Problems with memory or concentration (“brain fog”).',
+          'Joint aches, headaches, palpitations, and vaginal dryness or discomfort.',
+        ],
+      },
+      {
+        heading: 'Tracking helps',
+        paragraphs: [
+          'Logging periods and symptoms in Bloom builds a picture you can show a GP. Turn on perimenopause in Cycle settings to add these symptoms to your check-in. Predictions become a rougher guide, because cycles naturally vary more now.',
+          'You can still get pregnant until you’ve had no periods for a year (two years if you’re under 50), so keep using contraception if you don’t want to get pregnant.',
+        ],
+      },
+      {
+        heading: 'See a GP if',
+        bullets: [
+          'Symptoms are affecting your daily life — treatments, including HRT, can help.',
+          'You have symptoms before the age of 45.',
+          'Periods are very heavy, come more often than every 3 weeks, or you bleed between periods or after sex.',
+          'You have any bleeding after 12 months without a period.',
+        ],
+      },
+    ],
+    sources: [
+      { label: 'NHS — Menopause', url: 'https://www.nhs.uk/conditions/menopause/' },
+      { label: 'NHS — Symptoms of menopause and perimenopause', url: 'https://www.nhs.uk/conditions/menopause/symptoms/' },
+      { label: 'NICE NG23 — Menopause: identification and management', url: 'https://www.nice.org.uk/guidance/ng23' },
+    ],
+    review: { status: 'pending' },
+  },
+  {
+    slug: 'hot-flushes',
+    title: 'Hot flushes and night sweats',
+    category: 'Menopause',
+    minutes: 3,
+    summary: 'Simple things that help, and the treatments a GP can talk through.',
+    sections: [
+      {
+        paragraphs: [
+          'Hot flushes are short, sudden feelings of heat, often in the face, neck and chest, sometimes with sweating or a racing heart. Night sweats are hot flushes during sleep. They’re among the most common symptoms of perimenopause and menopause.',
+        ],
+      },
+      {
+        heading: 'Things you can try',
+        bullets: [
+          'Wear light layers you can take off, and keep your bedroom cool.',
+          'Notice triggers — caffeine, alcohol, spicy food and smoking are common ones.',
+          'Keep a fan or a glass of cold water nearby.',
+          'Regular exercise and keeping a healthy weight can help.',
+          'Cognitive behavioural therapy (CBT) can help with how much they bother you.',
+        ],
+      },
+      {
+        heading: 'Treatments',
+        paragraphs: [
+          'Hormone replacement therapy (HRT) is the main treatment and works well for most people. There are also non-hormonal options. A GP can talk through benefits and risks for you.',
+          'Log hot flushes in your check-in and Bloom’s symptom trends will show how often they happen — useful to bring to that appointment.',
+        ],
+      },
+    ],
+    sources: [
+      {
+        label: 'NHS — Things you can do to help with menopause symptoms',
+        url: 'https://www.nhs.uk/conditions/menopause/things-you-can-do/',
+      },
+      { label: 'NHS — Treatment for menopause and perimenopause', url: 'https://www.nhs.uk/conditions/menopause/treatment/' },
+      { label: 'NHS — Hormone replacement therapy (HRT)', url: 'https://www.nhs.uk/medicines/hormone-replacement-therapy-hrt/' },
     ],
     review: { status: 'pending' },
   },

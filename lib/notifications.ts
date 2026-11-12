@@ -4,6 +4,7 @@ import { Platform } from 'react-native';
 
 import { addDays, toLocalDate, type ISODate } from '@/lib/cycle/dates';
 import type { CycleAnalysis } from '@/lib/cycle/engine';
+import { pillSchedule } from '@/lib/data/pill';
 import type { Medication, Reminders } from '@/lib/data/types';
 
 /**
@@ -73,6 +74,21 @@ export function planReminders(
 
   for (const m of medications) {
     if (m.deletedAt || !m.reminder.enabled) continue;
+    if (m.pack) {
+      // Pill packs: only on days a pill is taken, plus a heads-up before a new pack.
+      for (const dose of pillSchedule(m.pack, today)) {
+        out.push({
+          id: `med-${m.id}-${dose.date}`,
+          ...(discreet
+            ? gentle
+            : dose.kind === 'pill'
+              ? { title: 'Pill reminder', body: `Time for ${m.name}.` }
+              : { title: 'New pill pack tomorrow', body: `Your next pack of ${m.name} starts tomorrow.` }),
+          at: { date: dose.date, hour: m.reminder.hour, minute: m.reminder.minute },
+        });
+      }
+      continue;
+    }
     out.push({
       id: `med-${m.id}`,
       ...(discreet ? gentle : { title: 'Medication reminder', body: `Time for ${m.name}${m.dose ? ` (${m.dose})` : ''}.` }),

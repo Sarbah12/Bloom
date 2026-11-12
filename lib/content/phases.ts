@@ -74,6 +74,17 @@ export const SYMPTOM_IDEAS: Partial<Record<string, string>> = {
   acne: 'Hormonal breakouts often follow a cyclical pattern. Gentle skincare helps; a pharmacist or doctor can advise on treatments.',
   nausea: 'If nausea is new, persistent, or you could be pregnant, check in with a healthcare professional.',
   dizziness: 'Dizziness with heavy bleeding can be a sign of low iron — worth checking with a healthcare professional.',
+  hot_flushes:
+    'For hot flushes, light layers, a fan and a cool room help many people. Noting triggers such as caffeine, alcohol or spicy food can show what to cut back. A GP can talk through treatments, including HRT.',
+  night_sweats: 'For night sweats, try a cool bedroom, light bedding and a glass of cold water by the bed. Regular exercise can help too.',
+  brain_fog:
+    'Brain fog is common in perimenopause. Sleep, regular movement and writing things down can help; mention it to a GP if it affects daily life.',
+  joint_pain:
+    'Joint aches can come with perimenopause. Gentle, regular movement often helps; see a GP if a joint is swollen, hot or very painful.',
+  palpitations:
+    'Palpitations are common in perimenopause and usually harmless, but see a GP if they last a long time, keep coming back, or come with chest pain, breathlessness or dizziness.',
+  vaginal_dryness:
+    'Vaginal moisturisers and lubricants from a pharmacy can help with dryness. A GP can offer treatments too, so it’s worth mentioning.',
 };
 
 export const CONTRACEPTION_DISCLAIMER =

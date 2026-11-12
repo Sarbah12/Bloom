@@ -15,9 +15,11 @@
     "build:icons": "node --experimental-strip-types --no-warnings scripts/build-icons.ts",
     "format": "prettier --write \"app/**/*.tsx\" \"components/**/*.{ts,tsx}\" \"lib/**/*.{ts,tsx}\" \"theme/**/*.{ts,tsx}\" \"scripts/**/*.{ts,mjs}\"",
     "build:brand": "node --experimental-strip-types --no-warnings scripts/build-brand.ts",
-    "build:design-system": "node --experimental-strip-types --no-warnings scripts/build-design-system.ts"
+    "build:design-system": "node --experimental-strip-types --no-warnings scripts/build-design-system.ts",
+    "migrate:remote": "node scripts/migrate-remote.mjs"
   },
   "dependencies": {
+    "@bacons/apple-targets": "^5.0.0",
     "@expo-google-fonts/inter": "^0.4.2",
     "@expo-google-fonts/playfair-display": "^0.4.2",
     "@expo-google-fonts/plus-jakarta-sans": "^0.4.2",
@@ -26,6 +28,7 @@
     "@react-native-async-storage/async-storage": "2.2.0",
     "@supabase/supabase-js": "^2.119.0",
     "expo": "~54.0.37",
+    "expo-build-properties": "~1.0.10",
     "expo-constants": "~18.0.14",
     "expo-crypto": "~15.0.9",
     "expo-document-picker": "~14.0.8",

@@ -18,6 +18,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { DataProvider, useCycle, useData } from '@/lib/data/store';
 import { useReminderSync } from '@/lib/notifications';
 import { clearSharedReports } from '@/lib/report/share';
+import { useWidgetSync } from '@/lib/widget';
+import { widgetSnapshot } from '@/lib/widget-snapshot';
 import { AppLock } from '@/lib/security/AppLock';
 import { CloudAutoSync } from '@/lib/supabase/useCloudSync';
 import { ThemeProvider, useTheme } from '@/theme/theme';
@@ -64,6 +66,7 @@ function Navigator() {
   const { data, ready } = useData();
   const { analysis, today } = useCycle();
   useReminderSync(data.reminders, analysis, today, data.preferences.showFertility, ready, data.medications);
+  useWidgetSync(widgetSnapshot(analysis, today, data.preferences.widgetDetailed), ready);
 
   return (
     <AppLock enabled={data.preferences.appLock}>

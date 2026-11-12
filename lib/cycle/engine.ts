@@ -26,6 +26,8 @@ export interface CycleSettings {
   /** What the person told us in onboarding; used until history takes over. */
   typicalCycleLength: number;
   typicalPeriodLength: number;
+  /** Perimenopause changes how estimates and notices are worded. */
+  lifeStage?: LifeStage;
 }
 
 export interface EngineOptions {
@@ -33,7 +35,14 @@ export interface EngineOptions {
   age?: number;
   /** How many future cycles to project for the calendar. */
   projectCycles?: number;
+  /**
+   * Perimenopause: cycles are expected to vary, so estimates are wider and
+   * gentler, and bleeding after a year without periods is flagged.
+   */
+  lifeStage?: LifeStage;
 }
+
+export type LifeStage = 'cycles' | 'perimenopause';
 
 /**
  * Clinical reference points. Sources:
@@ -58,6 +67,8 @@ export const LIMITS = {
   variationLimit: 9,
   variationLimitPrime: 7,
   noPeriodDays: 90,
+  /** 12 months without a period: menopause (NHS / NICE NG23). */
+  menopauseGapDays: 365,
   minCycleForPrediction: 15,
   maxCycleForPrediction: 90,
 } as const;
@@ -117,7 +128,7 @@ export interface NextPeriod {
   daysLate: number;
 }
 
-export type NoticeId = 'cycles-short' | 'cycles-long' | 'cycles-irregular' | 'period-long' | 'no-period' | 'late';
+export type NoticeId = 'cycles-short' | 'cycles-long' | 'cycles-irregular' | 'period-long' | 'no-period' | 'late' | 'bleeding-after-gap';
 
 export interface HealthNotice {
   id: NoticeId;
@@ -251,7 +262,14 @@ function variationLimit(age?: number): number {
   return age !== undefined && age >= 26 && age <= 41 ? LIMITS.variationLimitPrime : LIMITS.variationLimit;
 }
 
-function assessConfidence(stats: CycleStats, age?: number): { level: Confidence; reasons: string[] } {
+function assessConfidence(stats: CycleStats, age?: number, peri = false): { level: Confidence; reasons: string[] } {
+  const result = assessBase(stats, age);
+  if (!peri) return result;
+  result.reasons.push('Cycles often change in perimenopause, so treat dates as a rough guide.');
+  return { level: result.level === 'high' ? 'medium' : result.level, reasons: result.reasons };
+}
+
+function assessBase(stats: CycleStats, age?: number): { level: Confidence; reasons: string[] } {
   const n = stats.countedCycles;
   const reasons: string[] = [];
   if (n === 0) {
@@ -312,12 +330,41 @@ function phaseIn(p: ProjectedCycle, date: ISODate, lateTolerance: number): Phase
   return diffDays(p.nextStart, date) <= lateTolerance ? 'luteal' : null;
 }
 
-function buildNotices(stats: CycleStats, episodes: Episode[], next: NextPeriod | null, today: ISODate, age?: number): HealthNotice[] {
+function buildNotices(
+  stats: CycleStats,
+  episodes: Episode[],
+  next: NextPeriod | null,
+  today: ISODate,
+  age?: number,
+  peri = false,
+): HealthNotice[] {
   const notices: HealthNotice[] = [];
   const n = stats.countedCycles;
   const last = episodes[episodes.length - 1];
+  const previous = episodes[episodes.length - 2];
 
-  if (last && diffDays(last.start, today) >= LIMITS.noPeriodDays) {
+  // Bleeding after 12 months without a period (NHS: always see a GP).
+  if (last && previous && diffDays(previous.start, last.start) >= LIMITS.menopauseGapDays && diffDays(last.start, today) <= 90) {
+    notices.push({
+      id: 'bleeding-after-gap',
+      level: 'care',
+      title: 'Bleeding after a year without periods',
+      body: `Your last period started ${diffDays(previous.start, last.start)} days after the one before. Any bleeding after 12 months without a period should be checked by a GP, even if it’s light or only once. It’s usually not serious, but it’s important to get it looked at. ${CARE_FOOTER}`,
+    });
+  }
+
+  if (peri && last && diffDays(last.start, today) >= LIMITS.noPeriodDays) {
+    const gap = diffDays(last.start, today);
+    notices.push({
+      id: 'no-period',
+      level: 'info',
+      title: `No period recorded for ${gap} days`,
+      body:
+        gap >= LIMITS.menopauseGapDays
+          ? 'Twelve months without a period usually means you’ve reached menopause. If you bleed after this, see a GP — bleeding after menopause should always be checked.'
+          : 'Longer gaps between periods are common in perimenopause. Pregnancy is still possible until menopause, so if there’s any chance, a pregnancy test can help.',
+    });
+  } else if (last && diffDays(last.start, today) >= LIMITS.noPeriodDays) {
     notices.push({
       id: 'no-period',
       level: 'care',
@@ -349,7 +396,14 @@ function buildNotices(stats: CycleStats, episodes: Episode[], next: NextPeriod |
         body: `Your recent cycles average ${stats.averageCycleLength} days. A typical adult cycle is ${LIMITS.typicalCycleMin}–${LIMITS.typicalCycleMax} days. Longer cycles have many causes, and a healthcare professional can help you understand yours. ${CARE_FOOTER}`,
       });
     }
-    if (stats.variation !== null && stats.variation > variationLimit(age)) {
+    if (peri && stats.variation !== null && stats.variation > variationLimit(age)) {
+      notices.push({
+        id: 'cycles-irregular',
+        level: 'info',
+        title: 'Your cycle length has been varying',
+        body: `Your shortest and longest recent cycles differ by ${stats.variation} days. This is common in perimenopause. See a GP if periods come more often than every 3 weeks, are very heavy, or you bleed between periods or after sex. ${CARE_FOOTER}`,
+      });
+    } else if (stats.variation !== null && stats.variation > variationLimit(age)) {
       notices.push({
         id: 'cycles-irregular',
         level: 'care',
@@ -393,7 +447,8 @@ export function analyzeCycles(
   }
   const cycles = cyclesFrom(episodes);
   const stats = computeStats(episodes, cycles, settings);
-  const { level, reasons } = assessConfidence(stats, options.age);
+  const peri = options.lifeStage === 'perimenopause';
+  const { level, reasons } = assessConfidence(stats, options.age, peri);
 
   if (episodes.length === 0) {
     return {
@@ -416,7 +471,9 @@ export function analyzeCycles(
   const predictedStart = addDays(last.start, C);
   const isLate = today > predictedStart;
   const daysLate = isLate ? diffDays(predictedStart, today) : 0;
-  const half = stats.countedCycles >= 3 && stats.standardDeviation !== null ? clamp(Math.ceil(stats.standardDeviation), 1, 5) : 3;
+  const spread = stats.countedCycles >= 3 && stats.standardDeviation !== null ? clamp(Math.ceil(stats.standardDeviation), 1, 5) : 3;
+  // Perimenopause: cycles change, so the window is never narrower than ±4 days.
+  const half = peri ? clamp(spread + 2, 4, 7) : spread;
 
   const nextPeriod: NextPeriod = {
     start: predictedStart,
@@ -458,7 +515,7 @@ export function analyzeCycles(
     today: todayStatus,
     nextPeriod,
     projections,
-    notices: buildNotices(stats, episodes, nextPeriod, today, options.age),
+    notices: buildNotices(stats, episodes, nextPeriod, today, options.age, peri),
   };
 }
 

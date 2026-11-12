@@ -5,6 +5,7 @@ import { Platform, View } from 'react-native';
 import { Segmented } from '@/components/ui/Controls';
 import { Notice } from '@/components/ui/Feedback';
 import { ListGroup, ListRow } from '@/components/ui/ListRow';
+import { supportsWidget } from '@/lib/widget';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 import { MEDICAL_DISCLAIMER } from '@/lib/content/phases';
@@ -128,6 +129,19 @@ export default function Profile() {
             title="App Lock"
             subtitle="Require Face ID, fingerprint or passcode to open Bloom"
             toggle={{ value: prefs.appLock, onChange: toggleLock }}
+          />
+        ) : null}
+        {supportsWidget ? (
+          <ListRow
+            icon="grid"
+            title="Detailed home screen widget"
+            subtitle={
+              prefs.widgetDetailed
+                ? 'The widget says “Period in 5 days”'
+                : 'Off: the widget shows only numbers, like “Day 14 · 14 days to go”'
+            }
+            toggle={{ value: prefs.widgetDetailed, onChange: (widgetDetailed) => actions.updatePreferences({ widgetDetailed }) }}
+            testID="widget-detail"
           />
         ) : null}
         <ListRow icon="shield" title="Privacy & permissions" onPress={() => router.push('/settings/privacy')} />

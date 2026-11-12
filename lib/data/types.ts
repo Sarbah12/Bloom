@@ -1,6 +1,7 @@
 import type { ISODate } from '@/lib/cycle/dates';
 import type { CycleSettings, PeriodRecord } from '@/lib/cycle/engine';
 
+import type { PillPack } from './pill';
 import type { Energy, ExerciseLevel, Flow, GoalKey, MedicationKind, MoodKey, PainLevel, ReliefKey, SymptomKey } from './catalog';
 
 /** Timestamps are full ISO-8601 instants; calendar days are `ISODate`. */
@@ -55,6 +56,8 @@ export interface Medication {
   dose?: string;
   /** A daily reminder at this time, scheduled on the phone. */
   reminder: { enabled: boolean; hour: number; minute: number };
+  /** For the contraceptive pill: the pack it comes in, so Bloom knows today's pill. */
+  pack?: PillPack;
   createdAt: Timestamp;
   updatedAt: Timestamp;
   /** Tombstone so the removal reaches the cloud copy; the name is blanked. */
@@ -87,6 +90,8 @@ export interface Preferences {
   showFertility: boolean;
   /** Units for weight and temperature. Stored values are always metric. */
   units: 'metric' | 'imperial';
+  /** Home screen widget: false shows numbers only ("Day 14 · 14 days to go"). */
+  widgetDetailed: boolean;
 }
 
 export interface Profile {

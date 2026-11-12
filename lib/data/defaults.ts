@@ -72,7 +72,14 @@ export function createDefaultData(now: Date = new Date()): AppData {
       discreet: true,
     },
     consents: { cloudBackup: false, aiAssistant: false, productAnalytics: false, updatedAt: stamp },
-    preferences: { appearance: 'system', weekStartsOn: defaultWeekStart(), appLock: false, showFertility: true, units: defaultUnits() },
+    preferences: {
+      appearance: 'system',
+      weekStartsOn: defaultWeekStart(),
+      appLock: false,
+      showFertility: true,
+      units: defaultUnits(),
+      widgetDetailed: false,
+    },
     sync: {},
   };
 }

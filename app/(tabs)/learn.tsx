@@ -11,7 +11,7 @@ import { Text } from '@/components/ui/Text';
 import { ARTICLES, articleBySlug, type Article, type ArticleCategory } from '@/lib/content/articles';
 import { useTheme, type Theme } from '@/theme/theme';
 
-const CATEGORIES: ArticleCategory[] = ['Basics', 'Symptoms', 'Mood', 'Fertility', 'Care'];
+const CATEGORIES: ArticleCategory[] = ['Basics', 'Symptoms', 'Mood', 'Fertility', 'Menopause', 'Care'];
 const FEATURED = 'cycle-phases';
 
 function categoryStyle(category: ArticleCategory, colors: Theme['colors']): { bg: string; fg: string; icon: FeatherName } {
@@ -24,6 +24,8 @@ function categoryStyle(category: ArticleCategory, colors: Theme['colors']): { bg
       return { bg: colors.primarySoft, fg: colors.onPrimarySoft, icon: 'smile' };
     case 'Fertility':
       return { bg: colors.phase.ovulatory.soft, fg: colors.phase.ovulatory.onSoft, icon: 'sun' };
+    case 'Menopause':
+      return { bg: colors.phase.luteal.soft, fg: colors.phase.luteal.onSoft, icon: 'thermometer' };
     case 'Care':
       return { bg: colors.phase.follicular.soft, fg: colors.phase.follicular.onSoft, icon: 'heart' };
   }

@@ -9,6 +9,7 @@
 import { isISODate } from '../cycle/dates.ts';
 import { BODY_LIMITS, ENERGY_LEVELS, EXERCISE_LEVELS, FLOWS, MEDICATION_KINDS, MOODS, PAIN_LEVELS, RELIEF, SYMPTOMS } from './catalog.ts';
 import { hydrate } from './defaults.ts';
+import { PACK_TYPES } from './pill.ts';
 import type { AppData, DailyLog, JournalEntry, Medication, StoredPeriod } from './types.ts';
 
 export const BACKUP_FORMAT = 'bloom-export';
@@ -134,6 +135,17 @@ export function parseBackup(raw: string, now: string = new Date().toISOString())
     const r = isObject(m.reminder) ? m.reminder : {};
     const hour = bounded(r.hour, 0, 23, 1);
     const minute = bounded(r.minute, 0, 59, 1);
+    const pack =
+      m.kind === 'pill' &&
+      isObject(m.pack) &&
+      PACK_TYPES.some((p) => p.type === (m.pack as Record<string, unknown>).type) &&
+      isISODate(m.pack.startDate)
+        ? {
+            type: m.pack.type as NonNullable<Medication['pack']>['type'],
+            startDate: m.pack.startDate,
+            setOn: isISODate(m.pack.setOn) ? m.pack.setOn : undefined,
+          }
+        : undefined;
     medications.push({
       id: m.id,
       name,
@@ -142,6 +154,7 @@ export function parseBackup(raw: string, now: string = new Date().toISOString())
       reminder: { enabled: r.enabled === true && hour !== undefined, hour: hour ?? 8, minute: minute ?? 0 },
       createdAt: text(m.createdAt, 40) ?? now,
       updatedAt: text(m.updatedAt, 40) ?? now,
+      ...(pack ? { pack } : {}),
     });
   }
 
@@ -155,6 +168,12 @@ export function parseBackup(raw: string, now: string = new Date().toISOString())
       days,
       journal,
       medications,
+      cycle: {
+        typicalCycleLength: data.cycle.typicalCycleLength,
+        typicalPeriodLength: data.cycle.typicalPeriodLength,
+        lifeStage: data.cycle.lifeStage === 'perimenopause' ? 'perimenopause' : undefined,
+      },
+      preferences: { ...data.preferences, widgetDetailed: data.preferences.widgetDetailed === true },
       // A restored backup is a set-up app: skip onboarding.
       profile: { ...data.profile, onboardedAt: data.profile.onboardedAt ?? now },
       // Cloud bookkeeping belongs to the old phone.

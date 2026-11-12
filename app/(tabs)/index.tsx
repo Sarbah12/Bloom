@@ -21,6 +21,7 @@ import { CONTRACEPTION_DISCLAIMER, PHASES } from '@/lib/content/phases';
 import { addDays, diffDays } from '@/lib/cycle/dates';
 import { medicationKind, moodLabel, symptomLabel } from '@/lib/data/catalog';
 import { activeMeds } from '@/lib/data/meds';
+import { missedPills, packDay, packSpec } from '@/lib/data/pill';
 import { useCycle, useData } from '@/lib/data/store';
 import { formatDate, formatRange, greeting } from '@/lib/format';
 import { useTheme } from '@/theme/theme';
@@ -382,6 +383,48 @@ export default function Home() {
               return taken === meds.length ? 'All done for today.' : `${taken} of ${meds.length} ticked today.`;
             })()}
           </Text>
+          {meds
+            .filter((m) => m.pack)
+            .map((m) => {
+              const pack = m.pack!;
+              const spec = packSpec(pack.type);
+              const now = packDay(pack, today);
+              if (!now) return null;
+              const missed = missedPills(pack, m.id, data.days, today, pack.setOn ?? today).length;
+              const label =
+                now.kind === 'break'
+                  ? `Break day ${now.day - spec.active}`
+                  : now.kind === 'inactive'
+                    ? `Inactive pill ${now.day}`
+                    : `Pill ${now.day} of ${spec.active}`;
+              return (
+                <Pressable
+                  key={m.id}
+                  accessibilityRole="link"
+                  accessibilityLabel={`${m.name}: ${label}${missed ? `, ${missed} not ticked this pack` : ''}. Open pill pack.`}
+                  onPress={() => router.push(`/pill/${m.id}`)}
+                  style={[
+                    styles.rowBetween,
+                    {
+                      marginTop: space.md,
+                      paddingTop: space.md,
+                      borderTopWidth: StyleSheet.hairlineWidth,
+                      borderTopColor: colors.border,
+                      minHeight: MIN_TOUCH,
+                    },
+                  ]}
+                  testID="home-pill"
+                >
+                  <View style={styles.flex}>
+                    <Text variant="headline">{label}</Text>
+                    <Text variant="footnote" color={missed ? colors.warning : colors.inkMuted}>
+                      {missed ? `${missed} not ticked this pack — see what to do` : m.name}
+                    </Text>
+                  </View>
+                  <Feather name="chevron-right" size={20} color={colors.inkMuted} />
+                </Pressable>
+              );
+            })}
         </Card>
       ) : null}
 
