@@ -24,7 +24,7 @@ App Group: `group.com.sarbah.bloom`. iPhone only. Minimum iOS 16.4.
 ## 1. Build the archive (Xcode)
 
 ```
-npx expo prebuild -p ios
+npx expo prebuild -p ios --clean
 open ios/Bloom.xcworkspace
 ```
 
