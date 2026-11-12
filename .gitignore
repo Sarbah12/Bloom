@@ -17,3 +17,6 @@ credentials.json
 *.key
 *.mobileprovision
 .DS_Store
+
+# Decrypted database backups (health data)
+bloom-restore-*.dump

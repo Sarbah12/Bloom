@@ -41,8 +41,9 @@ What the code can't settle on its own. Work top to bottom.
 - [ ] Email: add SMTP to the auth service (`GOTRUE_SMTP_HOST/PORT/USER/PASS`,
       `GOTRUE_SMTP_ADMIN_EMAIL`), then set `GOTRUE_MAILER_AUTOCONFIRM=false`.
       Until then sign-ups aren't email-verified and password reset can't send.
-- [ ] Backups: turn on Railway volume backups for the Postgres service and test
-      a restore.
+- [x] Backups: nightly encrypted `pg_dump` to the private bucket
+      `bloom-backups` (30-day retention); restore tested 2026-11-12. See
+      `docs/BACKUPS.md`. Copy `BACKUP_PASSPHRASE` into a password manager.
 - [ ] Optional: a custom domain (e.g. `api.yourdomain`) on the kong service.
 - [ ] Confirm `delete_my_account()` can delete from `auth.users` on the hosted
       project. If not, move deletion to an Edge Function that uses the admin API.

@@ -16,7 +16,8 @@
     "format": "prettier --write \"app/**/*.tsx\" \"components/**/*.{ts,tsx}\" \"lib/**/*.{ts,tsx}\" \"theme/**/*.{ts,tsx}\" \"scripts/**/*.{ts,mjs}\"",
     "build:brand": "node --experimental-strip-types --no-warnings scripts/build-brand.ts",
     "build:design-system": "node --experimental-strip-types --no-warnings scripts/build-design-system.ts",
-    "migrate:remote": "node scripts/migrate-remote.mjs"
+    "migrate:remote": "node scripts/migrate-remote.mjs",
+    "backup:restore": "node scripts/restore-backup.mjs"
   },
   "dependencies": {
     "@bacons/apple-targets": "^5.0.0",
