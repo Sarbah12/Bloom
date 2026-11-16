@@ -41,8 +41,11 @@ export function useRestore() {
     );
     if (!ok) return false;
 
-    // App Lock is a choice about this phone, not part of someone's records.
-    actions.replaceAll({ ...parsed.data, preferences: { ...parsed.data.preferences, appLock: data.preferences.appLock } });
+    // App Lock and Apple Health are choices about this phone, not part of someone's records.
+    actions.replaceAll({
+      ...parsed.data,
+      preferences: { ...parsed.data.preferences, appLock: data.preferences.appLock, appleHealth: data.preferences.appleHealth },
+    });
     return true;
   }, [actions, data]);
 }

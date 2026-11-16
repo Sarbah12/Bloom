@@ -1,0 +1,7 @@
+{
+  "name": "bloom-health",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Apple Health (HealthKit) sync for Bloom.",
+  "main": "index.ts"
+}

@@ -92,6 +92,8 @@ export interface Preferences {
   units: 'metric' | 'imperial';
   /** Home screen widget: false shows numbers only ("Day 14 · 14 days to go"). */
   widgetDetailed: boolean;
+  /** Writes periods, symptoms and measurements to Apple Health. A choice about this phone; never synced. */
+  appleHealth: boolean;
 }
 
 export interface Profile {

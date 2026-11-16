@@ -4,7 +4,7 @@ A privacy-first menstrual health app for iOS and Android: period tracking, cycle
 predictions with honest confidence, symptom and mood logging, pattern insights,
 cycle-change and deviation alerts, cramp relief, symptom trend charts, body and
 lifestyle tracking, medication reminders, a contraceptive pill pack tracker,
-perimenopause support, a discreet iOS home screen widget, a doctor visit
+perimenopause support, a discreet iOS home screen widget, Apple Health sync, a doctor visit
 report (PDF), a private journal, sourced health education, Bloom Assistant
 (an optional AI chat) and sign-in with Apple, Google or email.
 
@@ -75,6 +75,8 @@ lib/cycle/           the cycle engine (pure, fully tested) — predictions, phas
                      changes and deviations, symptom trends, lifestyle across the cycle
 lib/report/          doctor visit report: facts (pure, tested) → HTML → PDF on the phone
 targets/widget/      iOS widget (SwiftUI/WidgetKit); reads cycle numbers shared via the App Group
+lib/health/          Apple Health: which samples Bloom writes and how imports merge (pure, tested)
+modules/bloom-health/ HealthKit module (Swift): makes Health match that list, reads period days
 lib/data/            app state, persisted to the encrypted vault
 lib/storage/         AES-256-GCM vault; key in iOS Keychain / Android Keystore
 lib/supabase/        optional auth (email, Apple, Google) + backup sync (last-write-wins with tombstones)

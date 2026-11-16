@@ -12,10 +12,12 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.sarbah.bloom",
       "usesAppleSignIn": true,
-      "buildNumber": "5",
+      "buildNumber": "6",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSFaceIDUsageDescription": "Bloom uses Face ID to keep your health records locked."
+        "NSFaceIDUsageDescription": "Bloom uses Face ID to keep your health records locked.",
+        "NSHealthShareUsageDescription": "Bloom can bring period days that other apps or your Apple Watch saved to Health into your Bloom calendar, only when you tap Import.",
+        "NSHealthUpdateUsageDescription": "Bloom adds the periods, symptoms and measurements you log to Apple Health, if you turn this on in Profile."
       },
       "entitlements": {
         "keychain-access-groups": [
@@ -23,7 +25,9 @@
         ],
         "com.apple.security.application-groups": [
           "group.com.sarbah.bloom"
-        ]
+        ],
+        "com.apple.developer.healthkit": true,
+        "com.apple.developer.healthkit.access": []
       },
       "privacyManifests": {
         "NSPrivacyTracking": false,

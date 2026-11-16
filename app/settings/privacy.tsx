@@ -8,6 +8,7 @@ import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 import { useData } from '@/lib/data/store';
 import { vaultIsDeviceSecure } from '@/lib/storage/vault';
+import { healthAvailable } from '@/modules/bloom-health';
 import { useTheme } from '@/theme/theme';
 
 const PROMISES = [
@@ -97,6 +98,14 @@ export default function Privacy() {
           }
           toggle={{ value: data.consents.aiAssistant, onChange: toggleAssistant }}
         />
+        {healthAvailable() ? (
+          <ListRow
+            icon="heart"
+            title="Apple Health"
+            value={data.preferences.appleHealth ? 'On' : 'Off'}
+            onPress={() => router.push('/settings/health')}
+          />
+        ) : null}
         <ListRow icon="bar-chart-2" title="Usage analytics" value="None collected" last />
       </ListGroup>
     </Screen>

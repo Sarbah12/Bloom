@@ -72,6 +72,15 @@ What the code can't settle on its own. Work top to bottom.
 - [x] Unused Railway `assistant` service deleted (2026-11-16); its code
       stays in `server/assistant/` for reference.
 
+## Apple Health
+
+- [ ] Test on a real iPhone: turn on, check Health › Cycle Tracking and
+      Symptoms, edit a period in Bloom and see Health follow, import from
+      another app, turn off with "Remove".
+- [ ] App Store: mention HealthKit in the review notes (where to find it:
+      Profile › Apple Health) and keep the privacy policy's Apple Health
+      section. App Store Connect may ask to confirm the HealthKit capability.
+
 ## Later (roadmap)
 
 - Shareable PDF report for appointments.

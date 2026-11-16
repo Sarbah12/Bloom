@@ -79,6 +79,7 @@ export function createDefaultData(now: Date = new Date()): AppData {
       showFertility: true,
       units: defaultUnits(),
       widgetDetailed: false,
+      appleHealth: false,
     },
     sync: {},
   };

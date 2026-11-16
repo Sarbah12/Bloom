@@ -16,6 +16,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { DataProvider, useCycle, useData } from '@/lib/data/store';
+import { useHealthSync } from '@/lib/health/sync';
 import { useReminderSync } from '@/lib/notifications';
 import { clearSharedReports } from '@/lib/report/share';
 import { usePartnerPublish } from '@/lib/supabase/partner';
@@ -68,6 +69,7 @@ function Navigator() {
   const { analysis, today } = useCycle();
   useReminderSync(data.reminders, analysis, today, data.preferences.showFertility, ready, data.medications);
   useWidgetSync(widgetSnapshot(analysis, today, data.preferences.widgetDetailed), ready);
+  useHealthSync(data, today, ready);
   usePartnerPublish(analysis, data.days[today], today, data.preferences.showFertility);
 
   return (

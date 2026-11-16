@@ -13,6 +13,8 @@ import { PRIVACY_POLICY_URL, SUPPORT_URL } from '@/lib/content/links';
 import { MEDICAL_DISCLAIMER } from '@/lib/content/phases';
 import { useData } from '@/lib/data/store';
 import { useRestore } from '@/lib/data/useRestore';
+import { removeFromHealth } from '@/lib/health/sync';
+import { healthAvailable } from '@/modules/bloom-health';
 import { shareExport } from '@/lib/export-file';
 import { confirm, notify } from '@/lib/platform';
 import { biometricsAvailable, confirmIdentity } from '@/lib/security/AppLock';
@@ -35,6 +37,7 @@ export default function Profile() {
   const { session } = useSession();
   const [canLock, setCanLock] = useState(false);
   const prefs = data.preferences;
+  const canUseHealth = healthAvailable();
 
   useEffect(() => {
     biometricsAvailable().then(setCanLock);
@@ -57,16 +60,18 @@ export default function Profile() {
   };
 
   const eraseAll = async () => {
-    const cloud = session ? ' and your cloud backup account' : '';
+    const cloud = session ? ', your cloud backup account' : '';
+    const health = prefs.appleHealth ? ', what Bloom added to Apple Health' : '';
     const ok = await confirm(
       'Delete all your data?',
-      `This permanently deletes every period, check-in and journal entry on this phone${cloud}. It cannot be undone. Consider exporting first.`,
+      `This permanently deletes every period, check-in and journal entry on this phone${cloud}${health}. It cannot be undone. Consider exporting first.`,
       'Delete everything',
       true,
     );
     if (!ok) return;
     try {
       if (session) await deleteCloudAccount();
+      if (prefs.appleHealth) await removeFromHealth().catch(() => undefined);
       await actions.eraseEverything();
       router.replace('/onboarding');
     } catch (e) {
@@ -161,6 +166,15 @@ export default function Profile() {
             }
             toggle={{ value: prefs.widgetDetailed, onChange: (widgetDetailed) => actions.updatePreferences({ widgetDetailed }) }}
             testID="widget-detail"
+          />
+        ) : null}
+        {canUseHealth ? (
+          <ListRow
+            icon="heart"
+            title="Apple Health"
+            value={prefs.appleHealth ? 'On' : 'Off'}
+            onPress={() => router.push('/settings/health')}
+            testID="profile-health"
           />
         ) : null}
         <ListRow icon="shield" title="Privacy & permissions" onPress={() => router.push('/settings/privacy')} />

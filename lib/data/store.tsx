@@ -15,7 +15,7 @@ import {
 import { destroyVault, loadVault, saveVault } from '@/lib/storage/vault';
 import { mergeSnapshot, snapshotOf } from '@/lib/sync/merge';
 
-import type { GoalKey } from './catalog';
+import type { Flow, GoalKey } from './catalog';
 import { createDefaultData, hydrate } from './defaults';
 import { useToday } from './today';
 import type { AppData, Consents, DailyLog, JournalEntry, Medication, Preferences, Profile, Reminders, StoredPeriod } from './types';
@@ -40,6 +40,8 @@ export interface DataActions {
   deleteMedication(id: string): void;
   /** Ticks or unticks a medication for a day. */
   toggleMedTaken(date: ISODate, medId: string): void;
+  /** Adds period days and flow imported from Apple Health. */
+  applyHealthImport(periods: PeriodRecord[], flows: Record<ISODate, Flow>): void;
   updateCycleSettings(patch: Partial<CycleSettings>): void;
   updateReminders(patch: Partial<Reminders>): void;
   updateConsents(patch: Partial<Omit<Consents, 'updatedAt'>>): void;
@@ -282,6 +284,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
         const medsTaken = prev.includes(medId) ? prev.filter((x) => x !== medId) : [...prev, medId];
         api.updateDay(date, { medsTaken });
       },
+      applyHealthImport(periods, flows) {
+        update((d) => {
+          let next = applyPeriods(d, periods);
+          const stamp = now();
+          const days = { ...next.days };
+          for (const [date, flow] of Object.entries(flows)) {
+            if (days[date]?.flow) continue;
+            days[date] = { ...(days[date] ?? { date, symptoms: [], moods: [] }), flow, date, updatedAt: stamp };
+          }
+          const deletedDays = { ...(next.sync.deletedDays ?? {}) };
+          for (const date of Object.keys(flows)) delete deletedDays[date];
+          next = { ...next, days, sync: { ...next.sync, deletedDays } };
+          return next;
+        });
+      },
       updateCycleSettings(patch) {
         update((d) => ({ ...d, cycle: { ...d.cycle, ...patch }, sync: stamp(d, 'cycle') }));
       },
@@ -292,8 +309,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
         update((d) => ({ ...d, consents: { ...d.consents, ...patch, updatedAt: now() } }));
       },
       updatePreferences(patch) {
-        // App lock is a per-device choice, so it doesn't count as a profile change.
-        const synced = Object.keys(patch).some((k) => k !== 'appLock');
+        // App lock and Apple Health are per-device choices, so they don't count as a profile change.
+        const synced = Object.keys(patch).some((k) => k !== 'appLock' && k !== 'appleHealth');
         update((d) => ({ ...d, preferences: { ...d.preferences, ...patch }, sync: synced ? stamp(d, 'profile') : d.sync }));
       },
       updateProfile(patch) {
