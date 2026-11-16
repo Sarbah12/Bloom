@@ -36,7 +36,8 @@ export function plural(n: number, one: string, many = `${one}s`): string {
 
 export function greeting(now: Date = new Date()): string {
   const h = now.getHours();
-  if (h < 5) return 'Good evening';
+  // Midnight to 5 am: "evening" reads wrong, "morning" feels too early.
+  if (h < 5) return 'Hello';
   if (h < 12) return 'Good morning';
   if (h < 18) return 'Good afternoon';
   return 'Good evening';

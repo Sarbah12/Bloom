@@ -18,6 +18,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { DataProvider, useCycle, useData } from '@/lib/data/store';
 import { useReminderSync } from '@/lib/notifications';
 import { clearSharedReports } from '@/lib/report/share';
+import { usePartnerPublish } from '@/lib/supabase/partner';
 import { useWidgetSync } from '@/lib/widget';
 import { widgetSnapshot } from '@/lib/widget-snapshot';
 import { AppLock } from '@/lib/security/AppLock';
@@ -67,6 +68,7 @@ function Navigator() {
   const { analysis, today } = useCycle();
   useReminderSync(data.reminders, analysis, today, data.preferences.showFertility, ready, data.medications);
   useWidgetSync(widgetSnapshot(analysis, today, data.preferences.widgetDetailed), ready);
+  usePartnerPublish(analysis, data.days[today], today, data.preferences.showFertility);
 
   return (
     <AppLock enabled={data.preferences.appLock}>
@@ -79,6 +81,7 @@ function Navigator() {
         <Stack.Screen name="log/[date]" options={{ presentation: 'modal' }} />
         <Stack.Screen name="account/index" options={{ presentation: 'modal' }} />
         <Stack.Screen name="account/reset" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="assistant" options={{ presentation: 'modal' }} />
       </Stack>
     </AppLock>
   );

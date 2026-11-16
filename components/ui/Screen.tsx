@@ -1,7 +1,7 @@
 import Feather from '@expo/vector-icons/Feather';
 import { router } from 'expo-router';
 import { useEffect, useState, type ReactNode } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, View, type ScrollViewProps } from 'react-native';
+import { Dimensions, Keyboard, Platform, Pressable, ScrollView, StyleSheet, View, type ScrollViewProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/theme/theme';
@@ -55,10 +55,23 @@ export function Screen({
   const { colors, space, elevation, scheme } = useTheme();
   const insets = useSafeAreaInsets();
   const [keyboardUp, setKeyboardUp] = useState(false);
+  // iOS: lift the content by the keyboard's height above the bottom of the
+  // display. Every screen, sheets included, reaches the bottom of the display.
+  // (React Native's KeyboardAvoidingView measures the screen relative to its
+  // sheet, not the display, so in a modal sheet it fell short by the sheet's
+  // top offset and the keyboard covered the footer.)
+  const [keyboardPad, setKeyboardPad] = useState(0);
 
   useEffect(() => {
-    const show = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () => setKeyboardUp(true));
-    const hide = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setKeyboardUp(false));
+    const show = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', (e) => {
+      setKeyboardUp(true);
+      if (Platform.OS !== 'ios') return;
+      setKeyboardPad(Math.max(0, Math.round(Dimensions.get('screen').height - e.endCoordinates.screenY)));
+    });
+    const hide = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => {
+      setKeyboardUp(false);
+      setKeyboardPad(0);
+    });
     return () => {
       show.remove();
       hide.remove();
@@ -131,7 +144,7 @@ export function Screen({
           <View style={styles.navButton}>{navRight}</View>
         </View>
       ) : null}
-      <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <View style={[styles.root, { paddingBottom: keyboardPad }]}>
         {scroll ? (
           <ScrollView
             style={styles.root}
@@ -160,7 +173,7 @@ export function Screen({
             {footer}
           </View>
         ) : null}
-      </KeyboardAvoidingView>
+      </View>
     </View>
   );
 }

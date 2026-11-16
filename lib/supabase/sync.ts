@@ -12,7 +12,7 @@ import { supabase } from './client';
 /** Bump when the prediction rules change, so cached predictions can be told apart. */
 export const ENGINE_VERSION = '1';
 /** The privacy-policy version a consent was given against. */
-export const POLICY_VERSION = '2026-11';
+export const POLICY_VERSION = '2026-12';
 
 const PAGE = 1000;
 

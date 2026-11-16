@@ -51,9 +51,28 @@ What the code can't settle on its own. Work top to bottom.
       project. If not, move deletion to an Edge Function that uses the admin API.
 - [ ] Auth emails branded, redirect URLs registered.
 - [ ] Consider end-to-end encrypting journal entries before upload.
+- [ ] **Sign in with Apple token revocation.** Apple requires deleting an
+      account to revoke the app's Sign in with Apple token (App Review
+      guideline 5.1.1(v)). Needs a Sign in with Apple key and a small server
+      step before `delete_my_account()`.
+- [ ] Google sign-in: create the iOS and web OAuth clients, add the IDs to
+      `.env` and the auth service (see README → Backend).
+
+## Bloom Assistant
+
+- [ ] **Clinical review** of the on-device instructions and the fixed urgent
+      guidance (`ON_DEVICE_INSTRUCTIONS` and `URGENT` in `lib/assistant/local.ts`).
+- [ ] Test answers on a real iPhone with Apple Intelligence on a set of
+      red-flag questions (heavy bleeding, ectopic signs, self-harm, pregnancy,
+      missed pills), and the article fallback on a phone without it.
+- [ ] App Store: the age rating answer for "Medical/Treatment Information" may
+      need to move from Infrequent to Frequent; mention the assistant in the
+      review notes (it runs on device, no sign-in needed).
+- [ ] Android: no on-device model yet, so Android gets the article answers.
+- [ ] Delete the unused Railway `assistant` service if the cloud version
+      won't come back.
 
 ## Later (roadmap)
 
-- AI health assistant — server-side, explicit consent, medically reviewed sources.
 - Shareable PDF report for appointments.
 - Localisation (the catalog keys are already language-neutral).

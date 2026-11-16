@@ -39,8 +39,18 @@ const PROMISES = [
 ] as const;
 
 export default function Privacy() {
-  const { data } = useData();
+  const { data, actions } = useData();
   const { colors, space } = useTheme();
+
+  // Turning it on goes through the assistant's own intro, which explains what
+  // is sent and records the consent. Turning it off works here, signed in or not.
+  const toggleAssistant = (next: boolean) => {
+    if (next) {
+      router.push('/assistant');
+      return;
+    }
+    actions.updateConsents({ aiAssistant: false });
+  };
 
   return (
     <Screen
@@ -79,9 +89,13 @@ export default function Privacy() {
         />
         <ListRow
           icon="message-circle"
-          title="AI assistant"
-          value="Not available yet"
-          subtitle="When it arrives, it will ask before reading anything."
+          title="Bloom Assistant"
+          subtitle={
+            data.consents.aiAssistant
+              ? 'On. Runs on this phone; it uses your log only when you switch on “Use my cycle summary”.'
+              : 'Off. Runs on this phone, and never uses your log unless you switch on a summary.'
+          }
+          toggle={{ value: data.consents.aiAssistant, onChange: toggleAssistant }}
         />
         <ListRow icon="bar-chart-2" title="Usage analytics" value="None collected" last />
       </ListGroup>

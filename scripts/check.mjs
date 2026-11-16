@@ -6,6 +6,7 @@ const steps = [
   ['types', 'npx', ['tsc', '--noEmit']],
   ['lint', 'npx', ['expo', 'lint', '--max-warnings', '0']],
   ['unit tests', 'npm', ['test', '--silent']],
+  ['assistant server', 'node', ['--test', 'server/assistant/validate.test.mjs']],
   ['contrast', 'node', ['--experimental-strip-types', '--no-warnings', 'scripts/check-contrast.ts']],
   ['health copy', 'node', ['scripts/check-copy.mjs']],
   ['database schema + RLS', 'node', ['scripts/check-schema.mjs']],
@@ -17,7 +18,7 @@ for (const [name, cmd, args] of steps) {
   const r = spawnSync(cmd, args, { encoding: 'utf8', cwd: new URL('..', import.meta.url).pathname });
   const ok = r.status === 0;
   const tail = (r.stdout + r.stderr).trim().split('\n').filter(Boolean);
-  const summary = name === 'unit tests' ? tail.filter((l) => /^# (pass|fail)/.test(l)).join(', ') : (tail.slice(-1)[0] ?? '');
+  const summary = name === 'unit tests' || name === 'assistant server' ? tail.filter((l) => /^# (pass|fail)/.test(l)).join(', ') : (tail.slice(-1)[0] ?? '');
   console.log(`${ok ? '✓' : '✗'} ${name.padEnd(22)} ${((Date.now() - started) / 1000).toFixed(1)}s  ${summary}`);
   if (!ok) {
     failed++;

@@ -145,6 +145,126 @@ do $$ begin
   if (select count(*) from public.articles) <> 1 then raise exception 'anon cannot read published articles'; end if;
 end $$;
 
+-- ---------------------------------------------------------------- partner mode
+-- The functions raise P0001 for user errors, the same code as a failing test,
+-- so expected failures are checked with a flag instead of letting them bubble.
+reset role;
+insert into auth.users (id, email) values ('00000000-0000-4000-8000-00000000000c', 'c@example.test');
+create temp table partner_code (code text);
+grant all on partner_code to authenticated;
+set role authenticated;
+
+-- A invites and publishes a summary.
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-00000000000a","role":"authenticated"}', false);
+insert into partner_code select public.create_partner_invite('Ama');
+insert into public.partner_snapshots (data) values
+  ('{"asOf":"2026-11-15","period":{"isPeriodDay":true},"phase":{"phase":"menstrual"},"today":{"symptoms":["cramps"]},"fertile":{"start":"2026-11-25"}}');
+do $$
+declare failed boolean;
+begin
+  if (select code from partner_code) !~ '^[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$' then raise exception 'unexpected code format'; end if;
+  if (select count(*) from public.partner_links where code_hash = encode(sha256(convert_to(replace((select code from partner_code), '-', ''), 'UTF8')), 'hex')) <> 1 then
+    raise exception 'invite not stored as a hash';
+  end if;
+  failed := false;
+  begin perform public.accept_partner_invite((select code from partner_code)); exception when sqlstate 'P0001' then failed := true; end;
+  if not failed then raise exception 'sharer could accept their own code'; end if;
+end $$;
+do $$ begin
+  begin
+    perform public.partner_code_hash('x');
+    raise exception 'partner_code_hash is callable directly';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+
+-- C (a stranger) guesses: wrong codes fail, and after 10 tries even the right one is refused.
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-00000000000c","role":"authenticated"}', false);
+do $$
+declare failed boolean;
+begin
+  if public.accept_partner_invite('AAAA-AAAA') is not null then raise exception 'a wrong code was accepted'; end if;
+  for i in 2..10 loop perform public.accept_partner_invite('AAAA-AAAA'); end loop;
+  failed := false;
+  begin perform public.accept_partner_invite((select code from partner_code)); exception when sqlstate 'P0001' then failed := true; end;
+  if not failed then raise exception 'code guessing is not rate-limited'; end if;
+end $$;
+
+-- B accepts (lowercase, no dash still works) and sees only what is switched on.
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-00000000000b","role":"authenticated"}', false);
+do $$
+declare v jsonb;
+begin
+  if public.accept_partner_invite(lower(replace((select code from partner_code), '-', '')), 'Kofi') <> 'Ama' then
+    raise exception 'accept did not return the sharer''s label';
+  end if;
+  v := public.get_partner_view() -> 0;
+  if v ->> 'label' <> 'Ama' or v -> 'period' is null or v -> 'phase' is null or v -> 'today' is null then
+    raise exception 'partner view missing shared parts: %', v;
+  end if;
+  if v ? 'fertile' then raise exception 'fertile window shown while off by default'; end if;
+  if (select count(*) from public.partner_snapshots) <> 0 then raise exception 'partner can read the raw summary table'; end if;
+  begin
+    update public.partner_links set share_fertile = true;
+    raise exception 'partner could edit the link directly';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+
+-- A changes what is shared; B's view follows.
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-00000000000a","role":"authenticated"}', false);
+select public.update_partner_sharing(true, true, false, true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-00000000000b","role":"authenticated"}', false);
+do $$
+declare v jsonb := public.get_partner_view() -> 0;
+begin
+  if v ? 'today' or not v ? 'fertile' then raise exception 'sharing choices not applied: %', v; end if;
+end $$;
+
+-- C sees nothing and can't end someone else's link.
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-00000000000c","role":"authenticated"}', false);
+do $$ begin
+  if public.get_partner_view() <> '[]'::jsonb or (select count(*) from public.partner_links) <> 0 then
+    raise exception 'a stranger can see a partner link';
+  end if;
+  perform public.end_partner_link((select id from public.partner_links limit 1));
+end $$;
+
+-- B ends the link: access stops and A's summary is deleted.
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-00000000000b","role":"authenticated"}', false);
+select public.end_partner_link((select id from public.partner_links where revoked_at is null));
+do $$ begin
+  if public.get_partner_view() <> '[]'::jsonb then raise exception 'partner still sees data after ending'; end if;
+end $$;
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-00000000000a","role":"authenticated"}', false);
+do $$
+declare failed boolean;
+begin
+  if (select count(*) from public.partner_snapshots) <> 0 then raise exception 'summary kept after the link ended'; end if;
+  -- An expired invite can't be used.
+  delete from partner_code;
+  insert into partner_code select public.create_partner_invite('Ama');
+end $$;
+reset role;
+update public.partner_links set code_expires_at = now() - interval '1 minute' where revoked_at is null;
+set role authenticated;
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-00000000000b","role":"authenticated"}', false);
+do $$
+declare failed boolean := false;
+begin
+  if public.accept_partner_invite((select code from partner_code)) is not null then raise exception 'an expired code was accepted'; end if;
+end $$;
+reset role;
+set role anon;
+do $$ begin
+  begin
+    perform public.get_partner_view();
+    raise exception 'signed-out callers can use partner functions';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+reset role;
+
 -- ---------------------------------------------------------------- A's edits survived B, then A deletes their account
 reset role;
 do $$ begin
@@ -168,7 +288,11 @@ do $$ begin
      + (select count(*) from public.user_consents) + (select count(*) from public.medications) <> 0 then
     raise exception 'health data left behind after account deletion';
   end if;
-  if (select count(*) from public.profiles) <> 1 then raise exception 'B''s profile was removed'; end if;
+  if not exists (select 1 from public.profiles where id = '00000000-0000-4000-8000-00000000000b') then raise exception 'B''s profile was removed'; end if;
+  if exists (select 1 from public.partner_links where '00000000-0000-4000-8000-00000000000a' in (owner_id, partner_id))
+     or exists (select 1 from public.partner_snapshots where owner_id = '00000000-0000-4000-8000-00000000000a') then
+    raise exception 'partner links or summary left behind after account deletion';
+  end if;
 end $$;
 
-\echo 'rls: 12 tables — all with row-level security; isolation, consent history, deletion and export behave'
+\echo 'rls: 15 tables — all with row-level security; partner mode sharing, codes and revocation; isolation, consent history, deletion and export behave'

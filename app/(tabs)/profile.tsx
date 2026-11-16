@@ -101,6 +101,15 @@ export default function Profile() {
           onPress={() => router.push('/medications')}
           testID="profile-medications"
         />
+        {cloudConfigured ? (
+          <ListRow
+            icon="users"
+            title="Partner"
+            subtitle="Share your cycle with someone you trust"
+            onPress={() => router.push('/partner')}
+            testID="profile-partner"
+          />
+        ) : null}
         <ListRow
           icon="file-text"
           title="Doctor visit report"

@@ -21,6 +21,7 @@ import { CONTRACEPTION_DISCLAIMER, PHASES } from '@/lib/content/phases';
 import { addDays, diffDays } from '@/lib/cycle/dates';
 import { medicationKind, moodLabel, symptomLabel } from '@/lib/data/catalog';
 import { activeMeds } from '@/lib/data/meds';
+import { usePartnerLinks } from '@/lib/supabase/partner';
 import { missedPills, packDay, packSpec } from '@/lib/data/pill';
 import { useCycle, useData } from '@/lib/data/store';
 import { formatDate, formatRange, greeting } from '@/lib/format';
@@ -86,6 +87,7 @@ function SaveWarning() {
 
 export default function Home() {
   const { data, actions } = useData();
+  const { seeing } = usePartnerLinks();
   const { analysis, today } = useCycle();
   const { colors, space, radii } = useTheme();
   const largeText = useLargeText();
@@ -353,6 +355,29 @@ export default function Home() {
         </View>
         <Button testID="log-today" label={todayLog ? 'Edit today’s check-in' : 'Log today’s check-in'} arrow fullWidth onPress={openLog} />
       </Card>
+
+      {seeing.length ? (
+        <GradientCard
+          variant="tint"
+          style={{ marginTop: space.lg }}
+          onPress={() => router.push('/partner/view')}
+          accessibilityLabel={`${seeing[0].owner_label || 'Your partner'} shares their cycle with you. Open.`}
+          testID="home-partner"
+        >
+          <View style={[styles.rowBetween, { gap: space.md }]}>
+            <View style={[styles.reliefIcon, { backgroundColor: colors.surface }]}>
+              <Feather name="users" size={20} color={colors.primary} />
+            </View>
+            <View style={styles.flex}>
+              <Text variant="title3">{seeing[0].owner_label || 'Your partner'}</Text>
+              <Text variant="callout" tone="muted" style={{ marginTop: 2 }}>
+                Their cycle and how you can support them
+              </Text>
+            </View>
+            <Feather name="chevron-right" size={20} color={colors.inkMuted} />
+          </View>
+        </GradientCard>
+      ) : null}
 
       {meds.length ? (
         <Card style={{ marginTop: space.lg }} testID="home-meds">

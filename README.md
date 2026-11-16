@@ -5,7 +5,8 @@ predictions with honest confidence, symptom and mood logging, pattern insights,
 cycle-change and deviation alerts, cramp relief, symptom trend charts, body and
 lifestyle tracking, medication reminders, a contraceptive pill pack tracker,
 perimenopause support, a discreet iOS home screen widget, a doctor visit
-report (PDF), a private journal and sourced health education.
+report (PDF), a private journal, sourced health education, Bloom Assistant
+(an optional AI chat) and sign-in with Apple, Google or email.
 
 Built with Expo SDK 54 (React Native 0.81, expo-router). One codebase for both
 platforms; a browser build exists only for previewing during development.
@@ -76,7 +77,9 @@ lib/report/          doctor visit report: facts (pure, tested) → HTML → PDF 
 targets/widget/      iOS widget (SwiftUI/WidgetKit); reads cycle numbers shared via the App Group
 lib/data/            app state, persisted to the encrypted vault
 lib/storage/         AES-256-GCM vault; key in iOS Keychain / Android Keystore
-lib/supabase/        optional auth + backup sync (last-write-wins with tombstones)
+lib/supabase/        optional auth (email, Apple, Google) + backup sync (last-write-wins with tombstones)
+lib/assistant/       Bloom Assistant: cycle summary, article search, safety check and prompt (pure, tested)
+modules/             local native modules: bloom-on-device-ai (Apple's on-device model, Foundation Models)
 lib/content/         articles, phase copy, disclaimers
 supabase/            migrations + RLS tests
 scripts/             checks and icon generation
@@ -149,6 +152,23 @@ can be sent.
 Caddy on the Railway `website` service —
 https://website-production-cc3c0a16.up.railway.app. Deploy changes with
 `railway up site --path-as-root --service website`.
+
+**Sign in with Apple / Google:** native sheets on the phone hand an ID token to
+`signInWithIdToken` (`lib/supabase/social.ts`). Auth service variables:
+`GOTRUE_EXTERNAL_APPLE_ENABLED=true`, `GOTRUE_EXTERNAL_APPLE_CLIENT_ID=com.sarbah.bloom`
+(set); for Google, `GOTRUE_EXTERNAL_GOOGLE_ENABLED=true`,
+`GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID=<web client id>,<iOS client id>` and
+`GOTRUE_EXTERNAL_GOOGLE_SKIP_NONCE_CHECK=true` (the iOS SDK adds its own nonce).
+The app reads `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` / `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`;
+without them the Google button is hidden.
+
+**Bloom Assistant** runs on the phone, with no server. On iOS 26+ with Apple
+Intelligence it streams answers from Apple's on-device model
+(`modules/bloom-on-device-ai`), grounded in the best-matching Bloom article
+(`lib/assistant/local.ts`); otherwise it answers straight from the articles.
+Red-flag messages always get fixed safety text first (`urgentAdvice`). The
+model's instructions are `ON_DEVICE_INSTRUCTIONS` in the same file.
+(`server/assistant/` is an unused cloud version kept for reference.)
 
 **Backups:** nightly, encrypted, to a private Railway bucket — see
 [`docs/BACKUPS.md`](docs/BACKUPS.md). `npm run backup:restore` tests a restore.

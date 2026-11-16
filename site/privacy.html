@@ -22,7 +22,7 @@
 
 <main id="main" class="wrap">
   <div class="hero">
-    <div class="eyebrow">Privacy Policy · Version 2026-11</div>
+    <div class="eyebrow">Privacy Policy · Version 2026-12</div>
     <h1>Your cycle is your business</h1>
     <p>Effective 12 November 2026. This policy explains what Bloom does with your information, in plain language.</p>
   </div>
@@ -33,6 +33,8 @@
       <li>Everything you log stays on your phone, encrypted, unless you choose to turn on cloud backup.</li>
       <li>We never sell your data, show ads, or use tracking or analytics tools.</li>
       <li>Cloud backup is off until you create an account and agree to it. You can turn it off and delete it at any time.</li>
+      <li>Bloom Assistant, the optional AI chat, runs entirely on your phone. Nothing you ask it is sent to us or anyone else, and chats aren’t saved.</li>
+      <li>Partner mode lets you share a short summary of your cycle with one person you invite. You choose what they see and can stop at any time.</li>
       <li>Reminders are created on your phone and are discreet by default.</li>
       <li>Bloom is not a method of contraception and does not diagnose anything.</li>
     </ul>
@@ -43,7 +45,7 @@
     <ol>
       <li><a href="#who">Who we are</a></li>
       <li><a href="#phone">What stays on your phone</a></li>
-      <li><a href="#backup">Optional cloud backup</a></li>
+      <li><a href="#backup">Optional cloud backup</a> and <a href="#assistant">Bloom Assistant</a></li>
       <li><a href="#sharing">When you share something</a></li>
       <li><a href="#never">What we never do</a></li>
       <li><a href="#basis">Why we may use your data</a></li>
@@ -84,7 +86,7 @@
     <table>
       <thead><tr><th scope="col">What</th><th scope="col">Why</th></tr></thead>
       <tbody>
-        <tr><td>Email address and password (stored only as a secure hash)</td><td>To create your account and let you sign in</td></tr>
+        <tr><td>Email address and password (stored only as a secure hash) — or, if you sign in with Apple or Google, the email address and account identifier they share with us, and your name if you choose to share it</td><td>To create your account and let you sign in</td></tr>
         <tr><td>The health records listed in section 2, including journal entries</td><td>To back them up and restore them</td></tr>
         <tr><td>Optional first name, year of birth, goals and app settings</td><td>To restore your setup</td></tr>
         <tr><td>Your latest cycle estimate (next expected period)</td><td>So your other phone shows the same estimate</td></tr>
@@ -94,6 +96,15 @@
     </table>
   </div>
   <p>Each person’s records are locked to their own account by the database itself (row-level security), so one account can never read another’s data.</p>
+  <p><strong>Sign in with Apple or Google.</strong> If you choose one of these, Apple or Google confirms who you are and tells us only your account identifier and email address (Apple can hide your real email behind a private relay address). They do not see your health records or anything you log in Bloom. Their own privacy policies cover the sign-in itself.</p>
+
+  <h3 id="assistant">Bloom Assistant (optional)</h3>
+  <p>Bloom Assistant is a chat that answers questions about periods, cycles and symptoms. It is off until you choose to start it, and it gives general information — it is not a doctor and does not diagnose.</p>
+  <ul>
+    <li><strong>Where it runs:</strong> on your phone only. On iPhones with Apple Intelligence it uses Apple’s built-in on-device language model; on other phones it answers from Bloom’s own articles. Your questions are not sent to Bloom, to Apple or to any AI company.</li>
+    <li><strong>Your log:</strong> it only uses a short summary of your recent cycles and logged symptoms if you switch on <em>Use my cycle summary</em>, and you can read that summary in full. Your journal, notes, name, medicine names and exact birth year are never included. The summary stays on your phone.</li>
+    <li><strong>What’s kept:</strong> nothing. Closing Bloom Assistant clears the chat.</li>
+  </ul>
 
   <h2 id="sharing">4. When you share something</h2>
   <p>Some features create a file only when you ask, and hand it to your phone’s share sheet. You decide where it goes; Bloom does not upload it or keep a copy.</p>
@@ -101,6 +112,16 @@
     <li><strong>Doctor visit report</strong> — a PDF of your cycles, symptoms and medications. Your name and notes are left out unless you include them.</li>
     <li><strong>Export my data</strong> — a backup file of everything you’ve logged. Anyone with this file can read it, so keep it somewhere safe.</li>
   </ul>
+  <h3 id="partner">Partner mode (optional)</h3>
+  <p>You can invite one person — a partner, for example — to see a short summary of your cycle in their own Bloom app. Both of you need a Bloom account, and it starts only when they enter a one-time code you send them (codes expire after 24 hours and are stored only in scrambled form).</p>
+  <ul>
+    <li><strong>What they can see:</strong> only the parts you switch on — whether you’re on your period and when the next one is expected; your current phase with support tips; the moods and symptoms you logged today; and, if you choose, your estimated fertile window. Never your notes, journal, medications, pain details, body measurements or past check-ins.</li>
+    <li><strong>How it works:</strong> your phone publishes that summary to our server; your partner’s app can read it only while the link is active, and the database itself filters out anything you switched off.</li>
+    <li><strong>Who you appear as:</strong> the first name you set in Bloom (if any). Neither of you sees the other’s email address.</li>
+    <li><strong>Stopping:</strong> either of you can end the link at any time in Profile → Partner. Access stops immediately and the summary is deleted from our server.</li>
+  </ul>
+  <p>Only share with someone you trust. If you ever feel pressured to share, you can end the link without them being asked to agree.</p>
+
   <p>Links to articles (such as the NHS or ACOG) open in your browser; those sites have their own privacy policies.</p>
 
   <h2 id="never">5. What we never do</h2>
@@ -108,7 +129,7 @@
     <li>Sell, rent or trade your data, or share it with advertisers or data brokers.</li>
     <li>Show ads, or use advertising identifiers or tracking across apps and websites.</li>
     <li>Use analytics or crash-reporting tools that collect your usage.</li>
-    <li>Use your health data to train AI. Bloom has no AI features today; if we add one, it will ask before reading anything.</li>
+    <li>Use your health data to train AI, or let Bloom Assistant use your log without your say-so — it only sees a summary when you switch that on in a chat, and even then it stays on your phone.</li>
     <li>Share your data with employers, insurers or anyone else — except where the law requires it (see below).</li>
   </ul>
 
@@ -125,6 +146,8 @@
     <li><strong>Cloud backup:</strong> until you delete it. Deleting your account removes your records from our database straight away.</li>
     <li><strong>Server backups:</strong> we take an encrypted backup of the database every night and keep each one for 30 days, so deleted data disappears from backups within 30 days.</li>
     <li><strong>Consent history:</strong> kept with your account and deleted with it.</li>
+    <li><strong>Partner mode:</strong> the shared summary is deleted as soon as either of you ends the link; unused invite codes expire after 24 hours.</li>
+    <li><strong>Bloom Assistant chats:</strong> never leave your phone and aren’t saved.</li>
   </ul>
 
   <h2 id="rights">9. Your rights and choices</h2>
@@ -133,7 +156,7 @@
     <li><strong>See and take your data</strong> — <em>Profile → Export my data</em>, or ask us for a copy of what’s on our server.</li>
     <li><strong>Correct it</strong> — edit any entry in the app.</li>
     <li><strong>Delete it</strong> — <em>Profile → Delete all my data</em> erases your phone and, if you’re signed in, your cloud account. Or email us.</li>
-    <li><strong>Withdraw consent</strong> — turn off cloud backup at any time. This doesn’t affect anything done before you withdrew.</li>
+    <li><strong>Withdraw consent</strong> — turn off cloud backup or Bloom Assistant at any time (<em>Profile → Privacy</em>). This doesn’t affect anything done before you withdrew.</li>
     <li><strong>Complain</strong> — to us first if you like, or to your data protection authority (for example, Ghana’s Data Protection Commission, or the authority in your country).</li>
   </ul>
   <p>We reply to requests within 30 days. We may ask you to confirm the request from the email on your account.</p>

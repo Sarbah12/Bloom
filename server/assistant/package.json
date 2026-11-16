@@ -1,0 +1,16 @@
+{
+  "name": "bloom-assistant",
+  "private": true,
+  "type": "module",
+  "description": "Bloom Assistant: a small streaming proxy between the app and the OpenAI API.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test *.test.mjs"
+  },
+  "dependencies": {
+    "openai": "^7.56.0"
+  }
+}

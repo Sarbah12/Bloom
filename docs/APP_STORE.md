@@ -10,7 +10,7 @@ App Group: `group.com.sarbah.bloom`. iPhone only. Minimum iOS 16.4.
       unique store name, e.g. “Bloom: Period & Cycle Tracker” (the home-screen
       name can stay “Bloom”).
 - [x] **Privacy policy URL:** https://website-production-cc3c0a16.up.railway.app/privacy
-      (version 2026-11, also linked in the app: Profile → Privacy policy).
+      (version 2026-12, also linked in the app: Profile → Privacy policy).
       Have it reviewed by someone qualified in data-protection law before
       launch — especially sections 6 (legal basis), 7 (transfers) and 11.
 - [x] **Support URL:** https://website-production-cc3c0a16.up.railway.app/support

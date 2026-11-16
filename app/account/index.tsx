@@ -6,12 +6,14 @@ import { Segmented, TextField } from '@/components/ui/Controls';
 import { EmptyState, Notice } from '@/components/ui/Feedback';
 import { ListGroup, ListRow } from '@/components/ui/ListRow';
 import { Screen } from '@/components/ui/Screen';
+import { SocialSignIn } from '@/components/ui/SocialSignIn';
 import { Text } from '@/components/ui/Text';
 import { useData } from '@/lib/data/store';
 import { formatDate } from '@/lib/format';
 import { confirm, notify } from '@/lib/platform';
 import { describeAuthError, MIN_PASSWORD, sendPasswordReset, signIn, signOut, signUp } from '@/lib/supabase/auth';
 import { cloudConfigured } from '@/lib/supabase/client';
+import { signInWithApple, signInWithGoogle } from '@/lib/supabase/social';
 import { recordConsent } from '@/lib/supabase/sync';
 import { useCloudSync } from '@/lib/supabase/useCloudSync';
 import { useTheme } from '@/theme/theme';
@@ -112,6 +114,18 @@ function AuthForm() {
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const passwordValid = mode === 'reset' || password.length >= (mode === 'sign-up' ? MIN_PASSWORD : 1);
 
+  const social = async (provider: () => Promise<boolean>) => {
+    setBusy(true);
+    setMessage(null);
+    try {
+      await provider();
+    } catch (e) {
+      setMessage({ tone: 'care', text: describeAuthError(e) });
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const submit = async () => {
     setBusy(true);
     setMessage(null);
@@ -139,6 +153,9 @@ function AuthForm() {
       <Text variant="callout" tone="muted" style={{ marginTop: space.xs, marginBottom: space.xl }}>
         An account is optional. It lets you restore your data on a new phone. Nothing is uploaded until you turn backup on.
       </Text>
+      {mode !== 'reset' ? (
+        <SocialSignIn busy={busy} onApple={() => social(signInWithApple)} onGoogle={() => social(signInWithGoogle)} />
+      ) : null}
       {mode !== 'reset' ? (
         <View style={{ marginBottom: space.xl }}>
           <Segmented<Mode>

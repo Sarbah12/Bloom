@@ -3,6 +3,7 @@ import * as Linking from 'expo-linking';
 import { useEffect, useState } from 'react';
 
 import { supabase } from './client';
+import { signOutSocial } from './social';
 
 export function useSession(): { session: Session | null; loading: boolean } {
   const [session, setSession] = useState<Session | null>(null);
@@ -74,6 +75,7 @@ export async function setNewPassword(password: string): Promise<void> {
 
 export async function signOut(): Promise<void> {
   await supabase?.auth.signOut();
+  await signOutSocial();
 }
 
 /** Deletes the account and every row of cloud data (see delete_my_account). */
