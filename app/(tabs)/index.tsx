@@ -301,7 +301,7 @@ export default function Home() {
               </Text>
               <View style={[styles.numberRow, { marginTop: space.sm, alignItems: 'center' }]}>
                 {o.dot ? <View style={[styles.dot, { backgroundColor: o.dot }]} /> : null}
-                <Text variant="title2" numberOfLines={1}>
+                <Text variant="title2" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.shrink}>
                   {o.value}
                 </Text>
               </View>
@@ -578,7 +578,8 @@ const styles = StyleSheet.create({
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   smallPill: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 6, gap: 2, minHeight: 32 },
   statsRow: { flexDirection: 'row' },
-  stat: { flex: 1 },
+  stat: { flex: 1, minWidth: 0, paddingRight: 8 },
+  shrink: { flexShrink: 1 },
   dot: { width: 10, height: 10, borderRadius: 5, marginRight: 6 },
   center: { alignItems: 'center' },
   flex: { flex: 1 },

@@ -104,7 +104,7 @@ export default function Learn() {
         <GradientCard
           variant="tint"
           onPress={() => router.push('/assistant')}
-          accessibilityLabel="Ask Bloom Assistant. Quick answers about periods, symptoms and what to ask your doctor."
+          accessibilityLabel="Ask Bloom Assistant. Private answers about periods and symptoms that stay on your phone."
           style={{ marginBottom: space.xl }}
           testID="learn-assistant"
         >
@@ -113,7 +113,7 @@ export default function Learn() {
             <View style={{ flex: 1, marginRight: space.md }}>
               <Text variant="headline">Ask Bloom Assistant</Text>
               <Text variant="footnote" tone="muted" style={{ marginTop: 2 }}>
-                Quick answers about periods, symptoms and what to ask your doctor
+                Private answers about periods and symptoms, right on your phone
               </Text>
             </View>
             <ArrowCircle bg={colors.primary} fg={colors.onPrimary} />

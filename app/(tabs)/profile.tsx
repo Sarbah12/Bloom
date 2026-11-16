@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Linking, Platform, View } from 'react-native';
@@ -19,6 +20,14 @@ import { vaultIsDeviceSecure } from '@/lib/storage/vault';
 import { deleteCloudAccount, useSession } from '@/lib/supabase/auth';
 import { cloudConfigured } from '@/lib/supabase/client';
 import { useTheme } from '@/theme/theme';
+
+/** "1.0.0 (4) · iOS", from app.json, so it can never drift from the build. */
+const APP_VERSION = (() => {
+  const config = Constants.expoConfig;
+  const build = Platform.OS === 'ios' ? config?.ios?.buildNumber : Platform.OS === 'android' ? config?.android?.versionCode : undefined;
+  const platform = Platform.OS === 'ios' ? 'iOS' : Platform.OS === 'android' ? 'Android' : 'Web';
+  return `${config?.version ?? '?'}${build ? ` (${build})` : ''} · ${platform}`;
+})();
 
 export default function Profile() {
   const { data, actions } = useData();
@@ -230,12 +239,7 @@ export default function Profile() {
             onPress={() => router.push('/design')}
           />
         ) : null}
-        <ListRow
-          icon="smartphone"
-          title="Version"
-          value={`0.1.0 · ${Platform.OS === 'ios' ? 'iOS' : Platform.OS === 'android' ? 'Android' : 'Web'}`}
-          last
-        />
+        <ListRow icon="smartphone" title="Version" value={APP_VERSION} last />
       </ListGroup>
     </Screen>
   );

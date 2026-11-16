@@ -126,7 +126,7 @@ export default function DoctorReport() {
           <View style={{ flexDirection: 'row', gap: space.md }}>
             {model.stats.slice(1, 3).map((s) => (
               <View key={s.label} style={{ flex: 1 }}>
-                <StatTile label={s.label} value={s.value} />
+                <StatTile label={s.label} value={s.value} caption={s.value === '—' ? 'Needs one full cycle' : undefined} />
               </View>
             ))}
           </View>

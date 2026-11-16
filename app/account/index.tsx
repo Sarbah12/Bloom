@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
@@ -20,10 +21,19 @@ import { useTheme } from '@/theme/theme';
 
 type Mode = 'sign-in' | 'sign-up' | 'reset';
 
+/** Why the screen was opened: plain account and backup, or to link a partner. */
+type Reason = 'backup' | 'partner';
+
 export default function Account() {
   const { session, status, error, run, lastSyncedAt } = useCloudSync();
   const { data, actions } = useData();
   const { space } = useTheme();
+  const reason: Reason = useLocalSearchParams<{ for?: string }>().for === 'partner' ? 'partner' : 'backup';
+
+  // Came here to link a partner: once signed in, go straight back to it.
+  useEffect(() => {
+    if (session && reason === 'partner' && router.canGoBack()) router.back();
+  }, [session, reason]);
 
   if (!cloudConfigured) {
     return (
@@ -37,7 +47,7 @@ export default function Account() {
     );
   }
 
-  if (!session) return <AuthForm />;
+  if (!session) return <AuthForm reason={reason} />;
 
   const toggleBackup = async (next: boolean) => {
     if (next) {
@@ -103,7 +113,18 @@ export default function Account() {
   );
 }
 
-function AuthForm() {
+const INTRO: Record<Reason, { title: string; body: string }> = {
+  backup: {
+    title: 'Back up your history',
+    body: 'An account is optional. It lets you restore your data on a new phone. Nothing is uploaded until you turn backup on.',
+  },
+  partner: {
+    title: 'Sign in to link a partner',
+    body: 'Partner mode needs an account for each of you, so only your partner can see what you share. Your log stays on this phone, and backup stays off unless you turn it on.',
+  },
+};
+
+function AuthForm({ reason }: { reason: Reason }) {
   const { space } = useTheme();
   const [mode, setMode] = useState<Mode>('sign-in');
   const [email, setEmail] = useState('');
@@ -146,12 +167,12 @@ function AuthForm() {
   };
 
   return (
-    <Screen nav="close" navTitle="Account & backup" testID="auth">
+    <Screen nav="close" navTitle={reason === 'partner' ? 'Account' : 'Account & backup'} testID="auth">
       <Text variant="title1" heading style={{ marginTop: space.sm }}>
-        {mode === 'reset' ? 'Reset your password' : 'Back up your history'}
+        {mode === 'reset' ? 'Reset your password' : INTRO[reason].title}
       </Text>
       <Text variant="callout" tone="muted" style={{ marginTop: space.xs, marginBottom: space.xl }}>
-        An account is optional. It lets you restore your data on a new phone. Nothing is uploaded until you turn backup on.
+        {INTRO[reason].body}
       </Text>
       {mode !== 'reset' ? (
         <SocialSignIn busy={busy} onApple={() => social(signInWithApple)} onGoogle={() => social(signInWithGoogle)} />

@@ -50,7 +50,12 @@ export default function Partner() {
           icon="users"
           title="Share with your partner"
           body="Let someone you trust see when your period is coming and how to support you. You both need a Bloom account so the link stays private."
-          action={<Button label="Sign in or create an account" onPress={() => router.push('/account')} />}
+          action={
+            <Button
+              label="Sign in or create an account"
+              onPress={() => router.push({ pathname: '/account', params: { for: 'partner' } })}
+            />
+          }
         />
       </Screen>
     );
