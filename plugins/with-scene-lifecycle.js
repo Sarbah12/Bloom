@@ -58,6 +58,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       ]
     }
 
+    // Long-press menu on the app icon, on a cold start.
+    if let item = connectionOptions.shortcutItem {
+      BloomQuickAction.post(item.type)
+    }
+
     let window = UIWindow(windowScene: windowScene)
     self.window = window
     appDelegate.window = window
@@ -72,6 +77,100 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
   func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
     _ = RCTLinkingManager.application(UIApplication.shared, continue: userActivity, restorationHandler: { _ in })
+  }
+
+  // Long-press menu on the app icon, while Bloom is running.
+  func windowScene(
+    _ windowScene: UIWindowScene,
+    performActionFor shortcutItem: UIApplicationShortcutItem,
+    completionHandler: @escaping (Bool) -> Void
+  ) {
+    BloomQuickAction.post(shortcutItem.type)
+    completionHandler(true)
+  }
+}
+
+/// Hands a quick action to JS: stored until read (cold start) and announced
+/// (already running). Read by modules/bloom-shortcuts.
+enum BloomQuickAction {
+  static func post(_ action: String) {
+    UserDefaults.standard.set(action, forKey: "bloom.quickAction")
+    NotificationCenter.default.post(name: Notification.Name("BloomQuickAction"), object: action)
+  }
+}
+
+// Siri and Shortcuts. Each opens Bloom, which does the logging after unlock.
+@available(iOS 17.0, *)
+struct LogPeriodStartedIntent: AppIntent {
+  static var title: LocalizedStringResource = "Log Period Started"
+  static var description = IntentDescription("Marks today as the first day of your period in Bloom.")
+  static var openAppWhenRun: Bool = true
+  @MainActor func perform() async throws -> some IntentResult {
+    BloomQuickAction.post("period-start")
+    return .result()
+  }
+}
+
+@available(iOS 17.0, *)
+struct LogPeriodEndedIntent: AppIntent {
+  static var title: LocalizedStringResource = "Log Period Ended"
+  static var description = IntentDescription("Marks today as the last day of your period in Bloom.")
+  static var openAppWhenRun: Bool = true
+  @MainActor func perform() async throws -> some IntentResult {
+    BloomQuickAction.post("period-end")
+    return .result()
+  }
+}
+
+@available(iOS 17.0, *)
+struct CheckInIntent: AppIntent {
+  static var title: LocalizedStringResource = "Check In"
+  static var description = IntentDescription("Opens today's check-in in Bloom.")
+  static var openAppWhenRun: Bool = true
+  @MainActor func perform() async throws -> some IntentResult {
+    BloomQuickAction.post("check-in")
+    return .result()
+  }
+}
+
+@available(iOS 17.0, *)
+struct AskAssistantIntent: AppIntent {
+  static var title: LocalizedStringResource = "Ask Bloom Assistant"
+  static var description = IntentDescription("Opens Bloom Assistant.")
+  static var openAppWhenRun: Bool = true
+  @MainActor func perform() async throws -> some IntentResult {
+    BloomQuickAction.post("assistant")
+    return .result()
+  }
+}
+
+@available(iOS 17.0, *)
+struct BloomAppShortcuts: AppShortcutsProvider {
+  static var appShortcuts: [AppShortcut] {
+    AppShortcut(
+      intent: LogPeriodStartedIntent(),
+      phrases: ["My period started in \\(.applicationName)", "Log my period in \\(.applicationName)", "Start my period in \\(.applicationName)"],
+      shortTitle: "Period Started",
+      systemImageName: "drop"
+    )
+    AppShortcut(
+      intent: LogPeriodEndedIntent(),
+      phrases: ["My period ended in \\(.applicationName)", "End my period in \\(.applicationName)"],
+      shortTitle: "Period Ended",
+      systemImageName: "checkmark.circle"
+    )
+    AppShortcut(
+      intent: CheckInIntent(),
+      phrases: ["Check in with \\(.applicationName)", "Log today in \\(.applicationName)"],
+      shortTitle: "Check In",
+      systemImageName: "square.and.pencil"
+    )
+    AppShortcut(
+      intent: AskAssistantIntent(),
+      phrases: ["Ask \\(.applicationName) Assistant", "Open \\(.applicationName) Assistant"],
+      shortTitle: "Ask Assistant",
+      systemImageName: "bubble.left"
+    )
   }
 }
 `;
@@ -105,6 +204,8 @@ function withSceneDelegate(config) {
       }
       text = text.replace(WINDOW_SETUP, '    // The window is created by SceneDelegate (UIScene lifecycle).\n');
       text = `${text.trimEnd()}\n${SCENE_DELEGATE}`;
+      // App Intents (Siri and Shortcuts) live in the same file.
+      text = text.replace(/^import Expo$/m, 'import Expo\nimport AppIntents');
       mod.modResults.contents = text;
     }
     return mod;

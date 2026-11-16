@@ -1,0 +1,7 @@
+{
+  "name": "bloom-shortcuts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Home screen quick actions and Siri/Shortcuts hand-off for Bloom.",
+  "main": "index.ts"
+}

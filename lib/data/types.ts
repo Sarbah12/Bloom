@@ -68,6 +68,10 @@ export interface Reminders {
   periodSoon: { enabled: boolean; daysBefore: 1 | 2 | 3 };
   dailyCheckIn: { enabled: boolean; hour: number; minute: number };
   fertileWindow: { enabled: boolean };
+  /** During a period: an evening "how are you feeling?" and "has it ended?". */
+  periodCare: { enabled: boolean; hour: number };
+  /** On the estimated start day ("It started" button), and a follow-up if it's late. */
+  periodDue: { enabled: boolean };
   /**
    * On by default: lock-screen previews never mention periods, fertility or
    * symptoms — just "A gentle reminder from Bloom".

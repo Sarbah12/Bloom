@@ -131,6 +131,25 @@ struct Ring: View {
   }
 }
 
+/// A pill that opens Bloom on a quick action (medium widget only; small
+/// widgets can't hold links).
+struct QuickButton: View {
+  let title: String
+  let symbol: String
+  let url: String
+  var body: some View {
+    Link(destination: URL(string: url)!) {
+      Label(title, systemImage: symbol)
+        .font(.caption.weight(.semibold))
+        .lineLimit(1)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .foregroundStyle(Color.onHero)
+        .background(Capsule().fill(Color.onHero.opacity(0.2)))
+    }
+  }
+}
+
 struct BloomWidgetView: View {
   @Environment(\.widgetFamily) var family
   let entry: Entry
@@ -160,6 +179,21 @@ struct BloomWidgetView: View {
             Text(s.hasData ? s.title : "Bloom").font(.system(size: 30, weight: .heavy, design: .rounded)).foregroundStyle(Color.onHero)
               .minimumScaleFactor(0.7).lineLimit(1)
             Text(s.hasData ? s.line : "Open Bloom to start").font(.subheadline).foregroundStyle(Color.onHeroMuted)
+              .lineLimit(1).minimumScaleFactor(0.8)
+            if s.hasData {
+              // One tap opens Bloom on the action. Discreet unless detailed is on.
+              HStack(spacing: 6) {
+                QuickButton(title: "Check in", symbol: "square.and.pencil", url: "bloom://quick/check-in")
+                if s.detailed {
+                  if s.periodDay > 0 {
+                    QuickButton(title: "Ended", symbol: "checkmark", url: "bloom://quick/period-end")
+                  } else {
+                    QuickButton(title: "Started", symbol: "drop.fill", url: "bloom://quick/period-start")
+                  }
+                }
+              }
+              .padding(.top, 4)
+            }
           }
           Spacer(minLength: 0)
           if s.hasData {

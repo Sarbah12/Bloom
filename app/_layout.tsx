@@ -17,7 +17,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { DataProvider, useCycle, useData } from '@/lib/data/store';
 import { useHealthSync } from '@/lib/health/sync';
-import { useReminderSync } from '@/lib/notifications';
+import { useNotificationTaps, useReminderSync } from '@/lib/notifications';
+import { useQuickActions } from '@/lib/quick';
 import { clearSharedReports } from '@/lib/report/share';
 import { usePartnerPublish } from '@/lib/supabase/partner';
 import { useWidgetSync } from '@/lib/widget';
@@ -67,9 +68,20 @@ function Navigator() {
   const { colors, scheme } = useTheme();
   const { data, ready } = useData();
   const { analysis, today } = useCycle();
-  useReminderSync(data.reminders, analysis, today, data.preferences.showFertility, ready, data.medications);
+  useReminderSync(
+    data.reminders,
+    analysis,
+    today,
+    data.preferences.showFertility,
+    ready,
+    data.medications,
+    data.cycle.typicalPeriodLength,
+    data.days,
+  );
+  useNotificationTaps(ready && !!data.profile.onboardedAt);
   useWidgetSync(widgetSnapshot(analysis, today, data.preferences.widgetDetailed), ready);
   useHealthSync(data, today, ready);
+  useQuickActions(data.reminders.discreet, !!analysis.today?.isPeriodDay, ready && !!data.profile.onboardedAt);
   usePartnerPublish(analysis, data.days[today], today, data.preferences.showFertility);
 
   return (
@@ -84,6 +96,7 @@ function Navigator() {
         <Stack.Screen name="account/index" options={{ presentation: 'modal' }} />
         <Stack.Screen name="account/reset" options={{ presentation: 'modal' }} />
         <Stack.Screen name="assistant" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="quick/[action]" options={{ presentation: 'modal' }} />
       </Stack>
     </AppLock>
   );

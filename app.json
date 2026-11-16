@@ -12,7 +12,7 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.sarbah.bloom",
       "usesAppleSignIn": true,
-      "buildNumber": "6",
+      "buildNumber": "7",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSFaceIDUsageDescription": "Bloom uses Face ID to keep your health records locked.",

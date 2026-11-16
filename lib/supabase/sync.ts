@@ -246,6 +246,9 @@ async function pull(): Promise<RemoteSnapshot> {
             },
             dailyCheckIn: { enabled: reminders.daily_check_in_enabled, hour: hour || 0, minute: minute || 0 },
             fertileWindow: { enabled: reminders.fertile_window_enabled },
+            // Not in the backup table: kept on each phone (merge keeps the local ones).
+            periodCare: { enabled: false, hour: 19 },
+            periodDue: { enabled: false },
             discreet: reminders.discreet,
           },
         }

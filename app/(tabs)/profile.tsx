@@ -86,6 +86,8 @@ export default function Profile() {
     data.reminders.periodSoon.enabled,
     data.reminders.dailyCheckIn.enabled,
     data.reminders.fertileWindow.enabled,
+    data.reminders.periodDue?.enabled,
+    data.reminders.periodCare?.enabled,
   ].filter(Boolean).length;
 
   return (

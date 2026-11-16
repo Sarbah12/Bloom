@@ -8,7 +8,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "test": "node --experimental-strip-types --no-warnings --test lib/assistant/*.test.ts lib/cycle/*.test.ts lib/storage/*.test.ts lib/sync/*.test.ts lib/data/*.test.ts lib/report/*.test.ts lib/partner/*.test.ts lib/health/*.test.ts",
+    "test": "node --experimental-strip-types --no-warnings --test lib/assistant/*.test.ts lib/cycle/*.test.ts lib/storage/*.test.ts lib/sync/*.test.ts lib/data/*.test.ts lib/report/*.test.ts lib/partner/*.test.ts lib/health/*.test.ts lib/quick-items.test.ts lib/reminders/*.test.ts",
     "typecheck": "tsc --noEmit",
     "check": "node scripts/check.mjs",
     "lint": "expo lint",

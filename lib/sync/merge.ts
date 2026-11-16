@@ -157,7 +157,8 @@ export function mergeSnapshot(local: AppData, remote: RemoteSnapshot, now: Times
       },
       preferences: { ...local.preferences, appearance: p.appearance, weekStartsOn: p.weekStartsOn, showFertility: p.showFertility },
       cycle: cycle.value,
-      reminders: reminders.value,
+      // Period-care and due-day reminders aren't backed up; each phone keeps its own.
+      reminders: { ...reminders.value, periodCare: local.reminders.periodCare, periodDue: local.reminders.periodDue },
       periods: periods.merged,
       journal: journal.merged,
       medications: medications.merged,

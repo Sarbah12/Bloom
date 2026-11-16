@@ -1,5 +1,5 @@
 import * as LocalAuthentication from 'expo-local-authentication';
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { AppState, Platform, StyleSheet, View } from 'react-native';
 
 import { BloomBadge } from '@/components/brand/Brand';
@@ -34,6 +34,13 @@ export async function confirmIdentity(reason: string): Promise<boolean> {
  * minute in the background, and — so health data never shows in the app
  * switcher — whenever the app isn't in the foreground.
  */
+const UnlockedContext = createContext(true);
+
+/** False while App Lock is on and Bloom hasn't been unlocked yet. */
+export function useUnlocked(): boolean {
+  return useContext(UnlockedContext);
+}
+
 export function AppLock({ enabled, children }: { enabled: boolean; children: ReactNode }) {
   const { colors, space } = useTheme();
   const [locked, setLocked] = useState(enabled);
@@ -78,7 +85,7 @@ export function AppLock({ enabled, children }: { enabled: boolean; children: Rea
 
   return (
     <View style={styles.fill}>
-      {children}
+      <UnlockedContext.Provider value={!(enabled && locked)}>{children}</UnlockedContext.Provider>
       {showLock ? (
         <View style={[StyleSheet.absoluteFill, styles.lock, { backgroundColor: colors.background, gap: space.lg }]}>
           <BloomBadge size={80} />

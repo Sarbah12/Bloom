@@ -1,11 +1,13 @@
 import * as Notifications from 'expo-notifications';
+import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { Platform } from 'react-native';
 
-import { addDays, toLocalDate, type ISODate } from '@/lib/cycle/dates';
+import { toLocalDate, type ISODate } from '@/lib/cycle/dates';
 import type { CycleAnalysis } from '@/lib/cycle/engine';
-import { pillSchedule } from '@/lib/data/pill';
-import type { Medication, Reminders } from '@/lib/data/types';
+import type { DailyLog, Medication, Reminders } from '@/lib/data/types';
+
+import { planReminders, type PlannedReminder } from './reminders/plan';
 
 /**
  * Local reminders, scheduled on the device. Nothing is sent from a server.
@@ -26,6 +28,11 @@ if (supportsReminders) {
       shouldSetBadge: false,
     }),
   });
+  // Long-press buttons on "your period may start today" (never used when discreet).
+  Notifications.setNotificationCategoryAsync('period-due', [
+    { identifier: 'started', buttonTitle: 'It started', options: { opensAppToForeground: true } },
+    { identifier: 'not-yet', buttonTitle: 'Not yet', options: { opensAppToForeground: false } },
+  ]).catch(() => {});
 }
 
 export async function requestReminderPermission(): Promise<boolean> {
@@ -43,93 +50,7 @@ export async function requestReminderPermission(): Promise<boolean> {
   return asked.granted;
 }
 
-export interface PlannedReminder {
-  id: string;
-  title: string;
-  body: string;
-  /** Local date + time to fire, or a daily repeat. */
-  at: { date: ISODate; hour: number; minute: number } | { daily: true; hour: number; minute: number };
-}
-
-/** Works out which reminders should exist. Pure, so it can be reasoned about. */
-export function planReminders(
-  reminders: Reminders,
-  analysis: CycleAnalysis,
-  today: ISODate,
-  showFertility: boolean,
-  medications: readonly Medication[] = [],
-): PlannedReminder[] {
-  const out: PlannedReminder[] = [];
-  const discreet = reminders.discreet;
-  const gentle = { title: 'Bloom', body: 'A gentle reminder from Bloom.' };
-
-  if (reminders.dailyCheckIn.enabled) {
-    out.push({
-      id: 'check-in',
-      title: 'Bloom',
-      body: 'How are you feeling today? Take a moment to check in.',
-      at: { daily: true, hour: reminders.dailyCheckIn.hour, minute: reminders.dailyCheckIn.minute },
-    });
-  }
-
-  for (const m of medications) {
-    if (m.deletedAt || !m.reminder.enabled) continue;
-    if (m.pack) {
-      // Pill packs: only on days a pill is taken, plus a heads-up before a new pack.
-      for (const dose of pillSchedule(m.pack, today)) {
-        out.push({
-          id: `med-${m.id}-${dose.date}`,
-          ...(discreet
-            ? gentle
-            : dose.kind === 'pill'
-              ? { title: 'Pill reminder', body: `Time for ${m.name}.` }
-              : { title: 'New pill pack tomorrow', body: `Your next pack of ${m.name} starts tomorrow.` }),
-          at: { date: dose.date, hour: m.reminder.hour, minute: m.reminder.minute },
-        });
-      }
-      continue;
-    }
-    out.push({
-      id: `med-${m.id}`,
-      ...(discreet ? gentle : { title: 'Medication reminder', body: `Time for ${m.name}${m.dose ? ` (${m.dose})` : ''}.` }),
-      at: { daily: true, hour: m.reminder.hour, minute: m.reminder.minute },
-    });
-  }
-
-  const next = analysis.nextPeriod;
-  if (reminders.periodSoon.enabled && next && !next.isLate) {
-    const date = addDays(next.start, -reminders.periodSoon.daysBefore);
-    if (date > today) {
-      out.push({
-        id: 'period-soon',
-        ...(discreet
-          ? gentle
-          : {
-              title: 'Your period may start soon',
-              body: `Estimated in ${reminders.periodSoon.daysBefore} day${reminders.periodSoon.daysBefore === 1 ? '' : 's'}. Estimates can vary.`,
-            }),
-        at: { date, hour: 9, minute: 0 },
-      });
-    }
-  }
-
-  if (reminders.fertileWindow.enabled && showFertility) {
-    const upcoming = analysis.projections.find((p) => p.fertileStart > today);
-    if (upcoming) {
-      out.push({
-        id: 'fertile-window',
-        ...(discreet
-          ? gentle
-          : {
-              title: 'Estimated fertile window',
-              body: 'Your estimated fertile window begins tomorrow. This is not a form of contraception.',
-            }),
-        at: { date: addDays(upcoming.fertileStart, -1), hour: 9, minute: 0 },
-      });
-    }
-  }
-  return out.filter((r) => !('date' in r.at) || r.at.date > today || r.at.date === today);
-}
+export { planReminders, type PlannedReminder } from './reminders/plan';
 
 async function apply(plan: PlannedReminder[]): Promise<void> {
   await Notifications.cancelAllScheduledNotificationsAsync();
@@ -152,7 +73,13 @@ async function apply(plan: PlannedReminder[]): Promise<void> {
     if (trigger.type === Notifications.SchedulableTriggerInputTypes.DATE && (trigger.date as Date).getTime() <= Date.now()) continue;
     await Notifications.scheduleNotificationAsync({
       identifier: r.id,
-      content: { title: r.title, body: r.body, sound: false },
+      content: {
+        title: r.title,
+        body: r.body,
+        sound: false,
+        data: r.url ? { url: r.url } : {},
+        ...(r.category ? { categoryIdentifier: r.category } : {}),
+      },
       trigger,
     });
   }
@@ -166,10 +93,38 @@ export function useReminderSync(
   showFertility: boolean,
   ready: boolean,
   medications: readonly Medication[] = [],
+  periodLength = 5,
+  days: Record<ISODate, DailyLog> = {},
 ) {
-  const key = JSON.stringify(planReminders(reminders, analysis, today, showFertility, medications));
+  const todayLog = days[today];
+  const key = JSON.stringify(
+    planReminders(reminders, analysis, today, { showFertility, medications, periodLength, days: todayLog ? { [today]: todayLog } : {} }),
+  );
   useEffect(() => {
     if (!supportsReminders || !ready) return;
     apply(JSON.parse(key) as PlannedReminder[]).catch((e) => console.warn('Bloom: reminders not scheduled', e));
   }, [key, ready]);
+}
+
+/** Opens the screen a notification points to when it's tapped (or its "It started" button). */
+export function useNotificationTaps(ready: boolean) {
+  useEffect(() => {
+    if (!supportsReminders || !ready) return;
+    const open = (response: Notifications.NotificationResponse | null) => {
+      if (!response) return;
+      if (response.actionIdentifier === 'not-yet') return;
+      const url = response.notification.request.content.data?.url;
+      const target = response.actionIdentifier === 'started' ? '/quick/period-start' : typeof url === 'string' ? url : null;
+      if (target) router.push(target as never);
+    };
+    // Tapped while Bloom wasn't running.
+    Notifications.getLastNotificationResponseAsync()
+      .then((r) => {
+        open(r);
+        return Notifications.clearLastNotificationResponseAsync();
+      })
+      .catch(() => {});
+    const sub = Notifications.addNotificationResponseReceivedListener(open);
+    return () => sub.remove();
+  }, [ready]);
 }

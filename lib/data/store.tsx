@@ -40,6 +40,8 @@ export interface DataActions {
   deleteMedication(id: string): void;
   /** Ticks or unticks a medication for a day. */
   toggleMedTaken(date: ISODate, medId: string): void;
+  /** Replaces the list of periods (used to undo a quick log). */
+  setPeriods(periods: PeriodRecord[]): void;
   /** Adds period days and flow imported from Apple Health. */
   applyHealthImport(periods: PeriodRecord[], flows: Record<ISODate, Flow>): void;
   updateCycleSettings(patch: Partial<CycleSettings>): void;
@@ -283,6 +285,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
         const prev = latest.current.days[date]?.medsTaken ?? [];
         const medsTaken = prev.includes(medId) ? prev.filter((x) => x !== medId) : [...prev, medId];
         api.updateDay(date, { medsTaken });
+      },
+      setPeriods(periods) {
+        update((d) => applyPeriods(d, periods));
       },
       applyHealthImport(periods, flows) {
         update((d) => {
