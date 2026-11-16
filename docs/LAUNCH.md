@@ -69,8 +69,8 @@ What the code can't settle on its own. Work top to bottom.
       need to move from Infrequent to Frequent; mention the assistant in the
       review notes (it runs on device, no sign-in needed).
 - [ ] Android: no on-device model yet, so Android gets the article answers.
-- [ ] Delete the unused Railway `assistant` service if the cloud version
-      won't come back.
+- [x] Unused Railway `assistant` service deleted (2026-11-16); its code
+      stays in `server/assistant/` for reference.
 
 ## Later (roadmap)
 
