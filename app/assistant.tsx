@@ -3,11 +3,13 @@ import { router } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Switch, TextInput, View } from 'react-native';
 
+import { BloomMark } from '@/components/brand/Brand';
 import { Button } from '@/components/ui/Button';
+import { GradientCard } from '@/components/ui/GradientCard';
 import { Notice } from '@/components/ui/Feedback';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
-import { buildPrompt, findArticles, libraryAnswer, urgentAdvice, type ChatTurn } from '@/lib/assistant/local';
+import { buildPrompt, feelingOf, findArticles, libraryAnswer, urgentAdvice, type ChatTurn } from '@/lib/assistant/local';
 import { buildCycleSummary } from '@/lib/assistant/summary';
 import { useCycle, useData } from '@/lib/data/store';
 import { useTheme } from '@/theme/theme';
@@ -16,15 +18,18 @@ import { generateOnDevice, onDeviceAvailability, type OnDeviceAvailability } fro
 const NAV_TITLE = 'Bloom Assistant';
 
 const STARTERS = [
+  'My cramps really hurt — what can I do right now?',
+  'Why do I feel so low before my period?',
+  'Is it normal for my period to be this painful?',
+  'What should I tell my doctor about period pain?',
   'Is my cycle length normal?',
-  'Why are my cramps worse some months?',
-  'What helps with PMS mood swings?',
-  'What should I ask my doctor about heavy periods?',
 ];
 
 interface Turn extends ChatTurn {
   /** Bloom articles the reply drew on, shown as "Read more" links. */
   articles?: { slug: string; title: string }[];
+  /** The question was about pain: offer the Cramp relief tools too. */
+  relief?: boolean;
 }
 
 /** Why the on-device model can't be used, in the person's terms. */
@@ -90,8 +95,8 @@ function Intro() {
     <Screen
       nav="close"
       navTitle={NAV_TITLE}
-      title="Ask about your cycle"
-      subtitle="Private answers about periods, symptoms and what to ask your doctor."
+      title="Here for you, any time"
+      subtitle="Ask about cramps, moods, your cycle or what to tell your doctor — kindly, privately, on your phone."
       footer={<Button label="Start chatting" size="lg" fullWidth loading={busy} onPress={start} testID="assistant-start" />}
     >
       <View style={{ gap: space.xl }}>
@@ -124,6 +129,7 @@ function Chat() {
   const scroll = useRef<ScrollView>(null);
   const input = useRef<TextInput>(null);
   const abort = useRef<AbortController | null>(null);
+  const name = data.profile.name?.trim().split(/\s+/)[0] ?? '';
 
   const availability = useMemo(onDeviceAvailability, []);
   const onDevice = availability === 'available';
@@ -143,7 +149,10 @@ function Chat() {
 
     if (!onDevice) {
       const answer = libraryAnswer(question);
-      setTurns([...history, { role: 'assistant', content: answer.text, articles: answer.articles }]);
+      setTurns([
+        ...history,
+        { role: 'assistant', content: answer.text, articles: answer.articles, relief: feelingOf(question) === 'pain' },
+      ]);
       return;
     }
 
@@ -151,9 +160,11 @@ function Chat() {
     const urgent = urgentAdvice(question);
     const lead = urgent ? `${urgent}\n\n` : '';
     const articles = findArticles(question, 1).map((a) => ({ slug: a.slug, title: a.title }));
-    const show = (reply: string) => setTurns((all) => [...all.slice(0, -1), { role: 'assistant', content: lead + reply, articles }]);
+    const relief = feelingOf(question) === 'pain';
+    const show = (reply: string) =>
+      setTurns((all) => [...all.slice(0, -1), { role: 'assistant', content: lead + reply, articles, relief }]);
 
-    setTurns([...history, { role: 'assistant', content: lead, articles }]);
+    setTurns([...history, { role: 'assistant', content: lead, articles, relief }]);
     setBusy(true);
     const controller = new AbortController();
     abort.current = controller;
@@ -164,14 +175,21 @@ function Chat() {
     } catch (e) {
       if (controller.signal.aborted) return;
       const code = (e as { code?: string })?.code ?? '';
-      if (urgent) {
-        show('');
+      if (code === 'ERR_TOO_LONG' || code === 'ERR_BUSY') {
+        // Fixable by the person: keep the question so it can be sent again.
+        if (urgent) show('');
+        else {
+          setTurns(history.slice(0, -1));
+          setDraft(question);
+        }
+        setError(ERRORS[code]);
       } else {
-        // Drop the unanswered question so it can be sent again.
-        setTurns(history.slice(0, -1));
-        setDraft(question);
+        // Anything else (model not ready, declined, a system hiccup): still
+        // answer kindly, from Bloom's own reviewed articles. The library
+        // answer already leads with any urgent guidance.
+        const answer = libraryAnswer(question);
+        setTurns((all) => [...all.slice(0, -1), { role: 'assistant', content: answer.text, articles: answer.articles, relief }]);
       }
-      setError(ERRORS[code] ?? 'Something went wrong. Please try again.');
     } finally {
       setBusy(false);
     }
@@ -229,7 +247,7 @@ function Chat() {
               ref={input}
               value={draft}
               onChangeText={setDraft}
-              placeholder="Ask about your cycle or symptoms"
+              placeholder="Tell me how you’re feeling…"
               placeholderTextColor={colors.inkSubtle}
               multiline
               maxLength={4000}
@@ -266,8 +284,37 @@ function Chat() {
 
         {turns.length === 0 ? (
           <View style={{ marginTop: space.md }}>
-            <Text variant="title2" heading style={{ marginBottom: space.md }}>
-              What would you like to know?
+            <View style={[styles.hello, { gap: space.md, marginBottom: space.lg }]}>
+              <BloomMark size={44} />
+              <View style={{ flex: 1 }}>
+                <Text variant="title2" heading>
+                  {name ? `Hi ${name}, how are you feeling?` : 'Hi, how are you feeling?'}
+                </Text>
+                <Text variant="callout" tone="muted" style={{ marginTop: 2 }}>
+                  Ask me anything — no question is too small or too embarrassing.
+                </Text>
+              </View>
+            </View>
+            <GradientCard
+              variant="tint"
+              onPress={() => router.push('/relief')}
+              accessibilityLabel="In pain right now? Open Cramp relief: a one-minute breathing exercise and gentle stretches."
+              style={{ marginBottom: space.lg }}
+              testID="assistant-relief"
+            >
+              <View style={[styles.hello, { gap: space.md }]}>
+                <Feather name="heart" size={20} color={colors.primary} />
+                <View style={{ flex: 1 }}>
+                  <Text variant="headline">In pain right now?</Text>
+                  <Text variant="footnote" tone="muted" style={{ marginTop: 2 }}>
+                    A one-minute breathing exercise and gentle stretches
+                  </Text>
+                </View>
+                <Feather name="chevron-right" size={20} color={colors.inkMuted} />
+              </View>
+            </GradientCard>
+            <Text variant="eyebrow" tone="muted" style={{ marginBottom: space.sm }}>
+              People often ask
             </Text>
             <View style={{ gap: space.sm, alignItems: 'flex-start' }}>
               {STARTERS.map((s) => (
@@ -280,34 +327,42 @@ function Chat() {
         {turns.map((t, i) => {
           const mine = t.role === 'user';
           return (
-            <View
-              key={i}
-              style={[
-                styles.bubble,
-                {
-                  alignSelf: mine ? 'flex-end' : 'flex-start',
-                  backgroundColor: mine ? colors.primarySoft : colors.surface,
-                  borderColor: mine ? colors.primarySoft : colors.border,
-                  borderRadius: radii.md,
-                  padding: space.md,
-                },
-              ]}
-              accessibilityLabel={`${mine ? 'You' : 'Bloom Assistant'}: ${t.content}`}
-            >
-              {t.content ? (
-                <Text variant="body" color={mine ? colors.onPrimarySoft : undefined} selectable>
-                  {t.content}
-                </Text>
-              ) : (
-                <ActivityIndicator color={colors.primary} />
-              )}
-              {!mine && t.articles?.length && !(busy && i === turns.length - 1) ? (
-                <View style={{ marginTop: space.sm, gap: space.xs, alignItems: 'flex-start' }}>
-                  {t.articles.map((a) => (
-                    <Button key={a.slug} label={`Read: ${a.title}`} variant="ghost" onPress={() => router.push(`/learn/${a.slug}`)} />
-                  ))}
+            <View key={i} style={[styles.turn, { alignSelf: mine ? 'flex-end' : 'flex-start', gap: space.sm }]}>
+              {mine ? null : (
+                <View style={[styles.avatar, { backgroundColor: colors.primarySoft }]}>
+                  <BloomMark size={22} />
                 </View>
-              ) : null}
+              )}
+              <View
+                style={[
+                  styles.bubble,
+                  {
+                    backgroundColor: mine ? colors.primarySoft : colors.surface,
+                    borderColor: mine ? colors.primarySoft : colors.border,
+                    borderRadius: radii.md,
+                    padding: space.md,
+                  },
+                ]}
+                accessibilityLabel={`${mine ? 'You' : 'Bloom Assistant'}: ${t.content}`}
+              >
+                {t.content ? (
+                  <Text variant="body" color={mine ? colors.onPrimarySoft : undefined} selectable>
+                    {t.content}
+                  </Text>
+                ) : (
+                  <ActivityIndicator color={colors.primary} />
+                )}
+                {!mine && (t.articles?.length || t.relief) && !(busy && i === turns.length - 1) ? (
+                  <View style={{ marginTop: space.sm, gap: space.xs, alignItems: 'flex-start' }}>
+                    {t.relief ? (
+                      <Button label="Try cramp relief now" icon="heart" variant="soft" onPress={() => router.push('/relief')} />
+                    ) : null}
+                    {t.articles?.map((a) => (
+                      <Button key={a.slug} label={`Read: ${a.title}`} variant="ghost" onPress={() => router.push(`/learn/${a.slug}`)} />
+                    ))}
+                  </View>
+                ) : null}
+              </View>
             </View>
           );
         })}
@@ -324,5 +379,8 @@ const styles = StyleSheet.create({
   inputRow: { flexDirection: 'row', alignItems: 'flex-end', borderWidth: 1, paddingLeft: 16, paddingRight: 6, paddingVertical: 6 },
   input: { flex: 1, maxHeight: 120, paddingTop: 10, paddingBottom: 10 },
   send: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-  bubble: { maxWidth: '88%', borderWidth: 1 },
+  bubble: { flexShrink: 1, borderWidth: 1 },
+  turn: { flexDirection: 'row', alignItems: 'flex-end', maxWidth: '92%' },
+  avatar: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
+  hello: { flexDirection: 'row', alignItems: 'center' },
 });

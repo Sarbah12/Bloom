@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { BUDGET, buildPrompt, findArticles, libraryAnswer, urgentAdvice, type ChatTurn } from './local.ts';
+import { BUDGET, buildPrompt, comfortLine, feelingOf, findArticles, libraryAnswer, urgentAdvice, type ChatTurn } from './local.ts';
 
 test('urgent messages get fixed safety guidance', () => {
   assert.match(urgentAdvice('I fainted and I am soaking a pad every hour') ?? '', /emergency/);
@@ -20,7 +20,7 @@ test('finds the right article for everyday questions', () => {
 test('library answers quote an article and link it', () => {
   const a = libraryAnswer('what helps period pain?');
   assert.equal(a.articles[0].slug, 'period-pain');
-  assert.match(a.text, /^From “Period pain: what helps”:/);
+  assert.match(a.text, /Bloom’s guide “Period pain: what helps” says:/);
   const none = libraryAnswer('tell me a joke');
   assert.equal(none.articles.length, 0);
   assert.match(none.text, /couldn’t find/);
@@ -47,4 +47,33 @@ test('prompt keeps recent history within budget and the summary only when shared
   assert.match(instructions, /Bloom article \("Period pain/);
 
   assert.match(buildPrompt([{ role: 'user', content: 'hi' }], 'Average cycle: 29 days').instructions, /About me[^]*29 days/);
+});
+
+test('notices pain and low moods, and leads with kindness', () => {
+  assert.equal(feelingOf('my cramps are killing me'), 'pain');
+  assert.equal(feelingOf('I feel so low and keep crying before my period'), 'low');
+  assert.equal(feelingOf('is a 30 day cycle normal?'), null);
+  assert.match(comfortLine('my period really hurts') ?? '', /sorry you’re hurting/);
+
+  const a = libraryAnswer('my cramps hurt so much, what helps?');
+  assert.match(a.text.split('\n\n')[0], /sorry you’re hurting/);
+  assert.match(a.text, /see a doctor/);
+});
+
+test('urgent guidance still comes first, without a soft opener in front of it', () => {
+  const a = libraryAnswer('severe pelvic pain and I fainted');
+  assert.match(a.text.split('\n\n')[0], /urgent care/);
+  assert.doesNotMatch(a.text, /sorry you’re hurting/);
+});
+
+test('instructions ask for warmth and practical comfort', () => {
+  const { instructions } = buildPrompt([{ role: 'user', content: 'cramps' }], null);
+  assert.match(instructions, /kind, knowledgeable friend/);
+  assert.match(instructions, /empathy/);
+  assert.match(instructions, /not something they have to put up with/);
+});
+
+test('pain questions get the practical part of the article', () => {
+  const a = libraryAnswer('My cramps really hurt — what can I do right now?');
+  assert.match(a.text, /heat|warm/i);
 });

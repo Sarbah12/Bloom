@@ -36,6 +36,33 @@ export function urgentAdvice(question: string): string | null {
   return null;
 }
 
+// --- how she's feeling ----------------------------------------------------
+
+export type Feeling = 'pain' | 'low' | null;
+
+const PAIN =
+  /\b(cramp\w*|pain\w*|hurt\w*|ache|aching|agony|unbearable|can'?t (move|sleep|get up|stand)|doubled over|killing me|so sore|throbbing)\b/i;
+const LOW =
+  /\b(sad|crying|cry|depress\w*|low|down|anxious|anxiety|overwhelm\w*|stressed|lonely|hopeless|exhausted|tired of|fed up|moody|irritable|angry)\b/i;
+
+/** Whether a message is about pain or a low mood, so replies can lead with care. */
+export function feelingOf(question: string): Feeling {
+  if (PAIN.test(question)) return 'pain';
+  if (LOW.test(question)) return 'low';
+  return null;
+}
+
+const COMFORT: Record<Exclude<Feeling, null>, string> = {
+  pain: 'I’m sorry you’re hurting — period pain can be really rough, and you don’t have to just put up with it.',
+  low: 'I’m sorry you’re feeling this way. Moods can shift a lot around a period, and it’s okay to go easy on yourself.',
+};
+
+/** A short, warm opening for the article-only answers. */
+export function comfortLine(question: string): string | null {
+  const f = feelingOf(question);
+  return f ? COMFORT[f] : null;
+}
+
 // --- article search -----------------------------------------------------
 
 const STOP = new Set(
@@ -125,6 +152,8 @@ export function findArticles(question: string, limit = 2): Article[] {
 /** The section of an article that best matches the question, as plain text. */
 export function bestExcerpt(article: Article, question: string, maxChars = 900): string {
   const q = new Set(terms(question));
+  // Someone in pain wants what helps, not why it happens.
+  if (feelingOf(question) === 'pain') for (const w of ['help', 'heat', 'eas', 'relief', 'try']) q.add(stem(w));
   let best = { score: -1, text: '' };
   for (const s of article.sections) {
     const parts = [...(s.paragraphs ?? []), ...(s.bullets ?? []).map((b) => `- ${b}`)];
@@ -148,14 +177,27 @@ export function libraryAnswer(question: string): LocalAnswer {
   const urgent = urgentAdvice(question);
   const found = findArticles(question);
   const links = found.map((a) => ({ slug: a.slug, title: a.title }));
+  const comfort = urgent ? null : comfortLine(question);
   if (!found.length) {
     return {
-      text: `${urgent ? `${urgent}\n\n` : ''}I couldn’t find that in Bloom’s articles. Try asking about cycle length, period pain, heavy periods, PMS and mood, the fertile window, perimenopause or getting ready for an appointment. For anything worrying, a doctor or pharmacist is the best person to ask.`,
+      text: [
+        urgent,
+        comfort,
+        'I couldn’t find that in Bloom’s articles, but I’m happy to help with cycle length, period pain, heavy periods, PMS and mood, the fertile window, perimenopause or getting ready for an appointment. For anything worrying, a doctor or pharmacist is the best person to ask.',
+      ]
+        .filter(Boolean)
+        .join('\n\n'),
       articles: [],
     };
   }
   const top = found[0];
-  const text = [urgent, `From “${top.title}”:`, bestExcerpt(top, question)].filter(Boolean).join('\n\n');
+  const close =
+    feelingOf(question) === 'pain'
+      ? 'If the pain stops you doing everyday things, please see a doctor — there are treatments that can help.'
+      : null;
+  const text = [urgent, comfort, `Here’s what Bloom’s guide “${top.title}” says:`, bestExcerpt(top, question), close]
+    .filter(Boolean)
+    .join('\n\n');
   return { text, articles: links };
 }
 
@@ -166,7 +208,11 @@ export const BUDGET = { history: 1600, summary: 1200, article: 1000 };
 
 export const ON_DEVICE_INSTRUCTIONS = `You are Bloom Assistant inside Bloom, a period and cycle tracking app. You answer questions about periods, cycles, symptoms, PMS, mood, cramps, perimenopause and getting ready for a doctor's appointment.
 - You are an AI, not a doctor. Give general information; never diagnose or say someone has a condition.
-- Be warm and plain. Two to five short sentences, or a short list starting lines with "- ". No Markdown.
+- Talk like a kind, knowledgeable friend: warm, gentle and plain, never clinical or cold. Use "you". No lectures.
+- If they're in pain or upset, start with one short, sincere sentence of empathy (for example "I'm sorry you're hurting, that sounds really hard"), then give practical comfort they can try now: warmth on the tummy or back, gentle movement or stretching, rest, a warm drink, and over-the-counter pain relief used as the label says.
+- Period pain that stops someone doing everyday things is not something they have to put up with: gently say a doctor can help and there are treatments.
+- Be reassuring without dismissing. Don't say "it's just your period".
+- Keep it short: two to five sentences, or a short list starting lines with "- ". End with a gentle, optional offer, like asking how they're feeling or if they'd like more ideas. No Markdown, no emoji.
 - Prefer the facts in the "Bloom article" section when it is relevant. Never invent numbers, studies or links.
 - Urgent symptoms (very heavy bleeding, fainting, sudden severe pain, pain with fever, signs of ectopic pregnancy, bleeding in pregnancy or after menopause): tell them to get urgent medical help first.
 - Never call any days "safe" or suggest cycle predictions can prevent pregnancy.
